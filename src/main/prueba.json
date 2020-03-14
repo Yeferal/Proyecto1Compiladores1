@@ -1,0 +1,71 @@
+{
+    MAPA:{
+        id: "_mapa1",
+        tamaño: {
+            filas: 10,
+            columnas: 10
+        },
+        alAzar: false,
+        planetasNeutrales: 20,
+        mapaCiego: false,
+        acumular: false,
+        NEUTRALES: {
+            mostrarNaves: true,
+            mostrarEstadisticas: true,
+            produccion: 10
+        },
+        finalizacion: 5
+    },
+    PLANETAS: [
+        {
+        nombre: "A",
+        naves: 10,
+        produccion: 10,
+        porcentajeMuertes: 0.44
+        },
+        {
+        nombre: "B",
+        naves: 15,
+        produccion: 9,
+        porcentajeMuertes: 0.40
+        },
+        {
+        nombre: "ABC",
+        naves: 15,
+        produccion: 12,
+        porcentajeMuertes: 0.8
+        }
+    ],
+    PLANETAS_NEUTRALES: [
+        {
+        nombre: "D",
+        naves: 10,
+        produccion: 10,
+        porcentajeMuertes: 0.40
+        },
+        {
+        nombre: "E",
+        naves: 10,
+        produccion: 10,
+        porcentajeMuertes: 0.40
+        }
+    ],
+    JUGADORES: [
+        {
+        nombre: "yefer",
+        planetas: [
+            "A",
+            "ABC"
+        ],
+        tipo: HUMANO
+        },
+        {
+        nombre: "PC1",
+        planetas: [
+            "B"
+        ],
+        tipo: FACIL
+        }
+    ]
+    
+}

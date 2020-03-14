@@ -5,6 +5,13 @@
  */
 package main;
 
+import analizadores.AnalizadorLexico;
+import analizadores.AnalizadorSintactico;
+import java.io.StringReader;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import ventanas.VentanaInicio;
+
 /**
  *
  * @author yefer
@@ -17,6 +24,16 @@ public class Main {
     public static void main(String[] args) {
         
         System.out.println("Hola Humano");
+        VentanaInicio ventanaInicio = new VentanaInicio();
+        ventanaInicio.setVisible(true);
+        
+//        AnalizadorLexico lexico = new AnalizadorLexico(new StringReader(texto));
+//        AnalizadorSintactico sintactico = new AnalizadorSintactico(lexico);
+//        try {
+//            sintactico.parse();
+//        } catch (Exception ex) {
+//            ex.printStackTrace();
+//        }
     }
     
 }
