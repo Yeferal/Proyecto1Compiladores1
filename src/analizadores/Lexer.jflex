@@ -49,6 +49,8 @@ mostrarEstadisticas     {System.out.println("MOSTRAR_ESTADISTICAS"); return new 
 produccion              {System.out.println("PRODUCCION"); return new Symbol(Simbolos.PRODUCCION , yycolumn, yyline, yytext());}
 finalizacion            {System.out.println("FINALIZACION"); return new Symbol(Simbolos.FINALIZACION , yycolumn, yyline, yytext());}
 
+tamaño                  {System.out.println("TAMAÑO"); return new Symbol(Simbolos.TAMANO , yycolumn, yyline, yytext());}
+
 nombre                  {System.out.println("NOMBRE"); return new Symbol(Simbolos.NOMBRE , yycolumn, yyline, yytext());}
 naves                   {System.out.println("NAVES"); return new Symbol(Simbolos.NAVES , yycolumn, yyline, yytext());}
 porcentajeMuertes       {System.out.println("PORCENTAJE_MUERTES"); return new Symbol(Simbolos.PORCENTAJE_MUERTES , yycolumn, yyline, yytext());}
@@ -65,12 +67,10 @@ false                   {System.out.println("FALSE"); return new Symbol(Simbolos
 <YYINITIAL> {
     {Espacio}                       {/*Ignore*/}
     "\""                            {System.out.println("comillas"); return new Symbol(Simbolos.COMILLAS , yycolumn, yyline, yytext());}
-    "tamano"                {System.out.println("TAMANO"); return new Symbol(Simbolos.TAMANO , yycolumn, yyline, yytext());}
+    "tama"."o"                      {System.out.println("TAMANO"); return new Symbol(Simbolos.TAMANO , yycolumn, yyline, yytext());}
     ("_"|"$"|{Letra})({Texto})*     {System.out.println("id: "+yytext()); return new Symbol(Simbolos.IDENTIFICADOR , yycolumn, yyline, yytext());}
     
     ({Numero}|{Numero}"."{Numero})  {System.out.println("NUMERO: "+yytext()); return new Symbol(Simbolos.NUMERO , yycolumn, yyline, yytext());}
-
-    {Nick}                          {System.out.println("nick name: "+yytext()); return new Symbol(Simbolos.NICK_NAME , yycolumn, yyline, yytext());}
 
     {Texto}                         {System.out.println("texto: "+yytext()); return new Symbol(Simbolos.PALABRA , yycolumn, yyline, yytext());}
     ":"                             {System.out.println("dos puntos"); return new Symbol(Simbolos.DOS_PUNTOS , yycolumn, yyline, yytext());}
@@ -79,6 +79,6 @@ false                   {System.out.println("FALSE"); return new Symbol(Simbolos
     "{"                             {System.out.println("LLAVES ABRE"); return new Symbol(Simbolos.LLAVES_A , yycolumn, yyline, yytext());}
     "}"                             {System.out.println("LLAVES CIEERRE"); return new Symbol(Simbolos.LLAVES_C , yycolumn, yyline, yytext());}
     ","                             {System.out.println("COMA"); return new Symbol(Simbolos.COMA , yycolumn, yyline, yytext());}
-    .                               {System.out.println("error: "+"Columna: "+yycolumn+1+" linea: "+ yyline+1);}
+    .                               {System.out.println("error Lexico: "+"Columna: "+yycolumn+1+" linea: "+ yyline+1 + "Token: "+yytext());}
     
 }

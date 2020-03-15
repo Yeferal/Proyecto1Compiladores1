@@ -3,6 +3,7 @@ package ventanas;
 
 public class VentanaInicio extends javax.swing.JFrame {
 
+    VentanaJugar ventanaJugar = new VentanaJugar();
 
     public VentanaInicio() {
         initComponents();
@@ -25,6 +26,11 @@ public class VentanaInicio extends javax.swing.JFrame {
         getContentPane().setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
         botonJugar.setText("Jugar");
+        botonJugar.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                botonJugarActionPerformed(evt);
+            }
+        });
 
         botonSalir.setText("Salir");
         botonSalir.addActionListener(new java.awt.event.ActionListener() {
@@ -71,6 +77,13 @@ public class VentanaInicio extends javax.swing.JFrame {
     private void botonSalirActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_botonSalirActionPerformed
         System.exit(0);
     }//GEN-LAST:event_botonSalirActionPerformed
+
+    private void botonJugarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_botonJugarActionPerformed
+       
+        this.setVisible(false);
+        ventanaJugar.setVisible(true);
+        
+    }//GEN-LAST:event_botonJugarActionPerformed
 
 
 

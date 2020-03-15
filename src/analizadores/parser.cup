@@ -1,6 +1,9 @@
 //codigo usuario
 package analizadores;
 import java_cup.runtime.Symbol;
+import objetos.Mapa;
+import objetos.Planeta;
+import manejadores.*;
 
 //Codigo para el parser, variables, metodos
 parser code
@@ -32,8 +35,10 @@ parser code
 
 action code
 {:
-
-    
+    Mapa mapa = null;
+    ManejadorMapa manejadorMapa = null;
+    ManejadorPlanetas manejadorPlanetas = new ManejadorPlanetas();
+    Planeta p;
 :}
 
 //Declaraciones 
@@ -59,9 +64,9 @@ start with INICIO;
 
 //Reglas Semanticas
 
-INICIO ::=  LLAVES_A S0 LLAVES_C;
+INICIO ::=  LLAVES_A S0 LLAVES_C {:mapa.stoString();:};
 
-S0 ::= 	 MAPA DOS_PUNTOS LLAVES_A ESTRUCTURA_MAPA LLAVES_C COMA S1
+S0 ::= 	 MAPA DOS_PUNTOS LLAVES_A {: mapa = new Mapa(); manejadorMapa = new ManejadorMapa();:} ESTRUCTURA_MAPA LLAVES_C COMA S1
         |PLANETAS DOS_PUNTOS CORCHE_A ESTRUCTURA_PLANETAS CORCHE_C COMA S2
 	|PLANETAS_NEUTRALES DOS_PUNTOS CORCHE_A ESTRUCTURA_PLANT_NEU CORCHE_C COMA S3
 	|JUGADORES DOS_PUNTOS CORCHE_A ESTRUCTURA_JUGADORES CORCHE_C COMA S4;
@@ -85,70 +90,127 @@ S9 ::= PLANETAS_NEUTRALES DOS_PUNTOS CORCHE_A ESTRUCTURA_PLANT_NEU CORCHE_C;
 
 S10 ::= PLANETAS DOS_PUNTOS CORCHE_A ESTRUCTURA_PLANETAS CORCHE_C;
 
-S2 ::=   MAPA DOS_PUNTOS LLAVES_A ESTRUCTURA_MAPA LLAVES_C COMA S5  
+S2 ::=   MAPA DOS_PUNTOS LLAVES_A {: mapa = new Mapa(); manejadorMapa = new ManejadorMapa();:} ESTRUCTURA_MAPA LLAVES_C COMA S5  
         |PLANETAS_NEUTRALES DOS_PUNTOS CORCHE_A ESTRUCTURA_PLANT_NEU CORCHE_C COMA S11
 	|JUGADORES DOS_PUNTOS CORCHE_A ESTRUCTURA_JUGADORES CORCHE_C COMA S12;
 
-S11 ::=  MAPA DOS_PUNTOS LLAVES_A ESTRUCTURA_MAPA LLAVES_C COMA S8  
+S11 ::=  MAPA DOS_PUNTOS LLAVES_A {: mapa = new Mapa(); manejadorMapa = new ManejadorMapa(); :} ESTRUCTURA_MAPA LLAVES_C COMA S8  
         |JUGADORES DOS_PUNTOS CORCHE_A ESTRUCTURA_JUGADORES CORCHE_C COMA S13;
 
-S12 ::=  MAPA DOS_PUNTOS LLAVES_A ESTRUCTURA_MAPA LLAVES_C COMA S9  
+S12 ::=  MAPA DOS_PUNTOS LLAVES_A {: mapa = new Mapa(); manejadorMapa = new ManejadorMapa(); :} ESTRUCTURA_MAPA LLAVES_C COMA S9  
         |PLANETAS_NEUTRALES DOS_PUNTOS CORCHE_A ESTRUCTURA_PLANT_NEU CORCHE_C COMA S13;
 
-S13 ::= MAPA DOS_PUNTOS LLAVES_A ESTRUCTURA_MAPA LLAVES_C;
+S13 ::= MAPA DOS_PUNTOS LLAVES_A {: mapa = new Mapa(); manejadorMapa = new ManejadorMapa(); :} ESTRUCTURA_MAPA LLAVES_C;
 
-S3 ::=   MAPA DOS_PUNTOS LLAVES_A ESTRUCTURA_MAPA LLAVES_C COMA S6
+S3 ::=   MAPA DOS_PUNTOS LLAVES_A {: mapa = new Mapa(); manejadorMapa = new ManejadorMapa(); :} ESTRUCTURA_MAPA LLAVES_C COMA S6
 	|PLANETAS DOS_PUNTOS CORCHE_A ESTRUCTURA_PLANETAS CORCHE_C COMA S11  
 	|JUGADORES DOS_PUNTOS CORCHE_A ESTRUCTURA_JUGADORES CORCHE_C COMA S14;
 
-S14 ::=  MAPA DOS_PUNTOS LLAVES_A ESTRUCTURA_MAPA LLAVES_C COMA S10
+S14 ::=  MAPA DOS_PUNTOS LLAVES_A {: mapa = new Mapa(); manejadorMapa = new ManejadorMapa(); :} ESTRUCTURA_MAPA LLAVES_C COMA S10
         |PLANETAS DOS_PUNTOS CORCHE_A ESTRUCTURA_PLANETAS CORCHE_C COMA S13;
 
-S4 ::=   MAPA DOS_PUNTOS LLAVES_A ESTRUCTURA_MAPA LLAVES_C COMA S7
+S4 ::=   MAPA DOS_PUNTOS LLAVES_A {: mapa = new Mapa(); manejadorMapa = new ManejadorMapa(); :} ESTRUCTURA_MAPA LLAVES_C COMA S7
         |PLANETAS DOS_PUNTOS CORCHE_A ESTRUCTURA_PLANETAS CORCHE_C COMA S12
 	|PLANETAS_NEUTRALES DOS_PUNTOS CORCHE_A ESTRUCTURA_PLANT_NEU CORCHE_C COMA S14;
 
-ESTRUCTURA_MAPA ::=  ID DOS_PUNTOS COMILLAS IDENTIFICADOR COMILLAS MAPA_FIN 
+ESTRUCTURA_MAPA ::=  ID DOS_PUNTOS COMILLAS IDENTIFICADOR:a COMILLAS {: 
+                    if(!manejadorMapa.isExiste(1)){
+                        mapa.setId((String) a);
+                    }else{
+
+                    }
+:} MAPA_FIN 
                     |TAMANO DOS_PUNTOS LLAVES_A DIMENSION LLAVES_C MAPA_FIN
-                    |ALAZAR DOS_PUNTOS BOLEANO MAPA_FIN
-                    |PLANET_NEU DOS_PUNTOS NUMERO MAPA_FIN
-                    |MAPA_CIEGO DOS_PUNTOS BOLEANO MAPA_FIN
-                    |ACUMULAR DOS_PUNTOS BOLEANO MAPA_FIN
-                    |NEUTRALES DOS_PUNTOS LLAVES_A ATRIB_NEU LLAVES_C MAPA_FIN
-                    |FINALIZACION {:System.out.println("Finaliza"); :} DOS_PUNTOS {:System.out.println("doss puntos"); :} NUMERO {:System.out.println("catidsa"); :} MAPA_FIN;
+                    |ALAZAR DOS_PUNTOS BOLEANO:b {: 
+                    if(!manejadorMapa.isExiste(3)){
+                        mapa.setAlAzar((boolean) b);
+                    }else{
+
+                    }
+:} MAPA_FIN
+                    |PLANET_NEU DOS_PUNTOS NUMERO:n {: 
+                    if(!manejadorMapa.isExiste(4)){
+                        mapa.setPlanetasNeutrales(Integer.parseInt((String) n));
+                    }else{
+
+                    }
+:} MAPA_FIN
+                    |MAPA_CIEGO DOS_PUNTOS BOLEANO:b {: 
+                    if(!manejadorMapa.isExiste(5)){
+                        mapa.setMapaCiego((boolean) b);
+                    }else{
+
+                    }
+:} MAPA_FIN
+                    |ACUMULAR DOS_PUNTOS BOLEANO:b {: 
+                    if(!manejadorMapa.isExiste(6)){
+                        mapa.setAcumular((boolean) b);
+                    }else{
+
+                    }
+:} MAPA_FIN
+                    |NEUTRALES DOS_PUNTOS LLAVES_A ATRIB_NEU LLAVES_C {: 
+                    if(!manejadorMapa.isExiste(7)){
+                        
+                    }else{
+
+                    }
+:} MAPA_FIN
+                    |FINALIZACION DOS_PUNTOS NUMERO:n {: 
+                    if(!manejadorMapa.isExiste(8)){
+                        mapa.setFinalizacion(Integer.parseInt((String) n));
+                    }else{
+
+                    }
+:} MAPA_FIN
+                    |error:e ESTRUCTURA_MAPA {:parser.syntax_error((Symbol)e);:};
 
 MAPA_FIN ::= COMA ESTRUCTURA_MAPA
             |;
 
-DIMENSION ::=    FILAS DOS_PUNTOS NUMERO COMA COLUMNAS DOS_PUNTOS NUMERO
-                |COLUMNAS DOS_PUNTOS NUMERO COMA FILAS DOS_PUNTOS NUMERO;
+DIMENSION ::=    FILAS DOS_PUNTOS NUMERO:x COMA COLUMNAS DOS_PUNTOS NUMERO:y {: 
+                    if(!manejadorMapa.isExiste(2)){
+                        mapa.setTamanioX(Integer.parseInt((String) x));
+                        mapa.setTamanioY(Integer.parseInt((String) y));
+                    }
+:}
+                |COLUMNAS DOS_PUNTOS NUMERO:y COMA FILAS DOS_PUNTOS NUMERO:x {: 
+                    if(!manejadorMapa.isExiste(2)){
+                        mapa.setTamanioX(Integer.parseInt((String) x));
+                        mapa.setTamanioY(Integer.parseInt((String) y));
+                    }
+:};
 
 
-BOLEANO ::=  TRUE
-            |FALSE;
+BOLEANO ::=  TRUE {:RESULT = true;:}
+            |FALSE {:RESULT = false;:};
 
-ATRIB_NEU ::=  	 MOSTRAR_NAVES DOS_PUNTOS BOLEANO COMA ATN1
-                |MOSTRAR_ESTADISTICAS DOS_PUNTOS BOLEANO COMA ATN2
-		|PRODUCCION DOS_PUNTOS NUMERO COMA ATN3;
+ATRIB_NEU ::=  	 MOSTRAR_NAVES DOS_PUNTOS BOLEANO:b {:mapa.setMostrarNavesNeutrales((boolean) b);:} COMA ATN1
+                |MOSTRAR_ESTADISTICAS DOS_PUNTOS BOLEANO:b {:mapa.setMostrarEstadisticasNeutrales((boolean) b);:} COMA ATN2
+		|PRODUCCION DOS_PUNTOS NUMERO:n {:mapa.setProduccionNeutrales(Integer.parseInt((String) n));:} COMA ATN3
+                |error:e ESTRUCTURA_MAPA {:parser.syntax_error((Symbol)e);:};
 
-ATN1 ::= MOSTRAR_ESTADISTICAS DOS_PUNTOS BOLEANO COMA ATN4
-	|PRODUCCION DOS_PUNTOS NUMERO COMA ATN5;
+ATN1 ::= MOSTRAR_ESTADISTICAS DOS_PUNTOS BOLEANO:b {:mapa.setMostrarEstadisticasNeutrales((boolean) b);:} COMA ATN4
+	|PRODUCCION DOS_PUNTOS NUMERO:n {:mapa.setProduccionNeutrales(Integer.parseInt((String) n));:} COMA ATN5;
 
-ATN2 ::= MOSTRAR_NAVES DOS_PUNTOS BOLEANO COMA ATN4
-	|PRODUCCION DOS_PUNTOS NUMERO COMA ATN6;
-
-
-ATN3 ::= MOSTRAR_NAVES DOS_PUNTOS BOLEANO COMA ATN5
-	|MOSTRAR_ESTADISTICAS DOS_PUNTOS BOLEANO COMA ATN6;
+ATN2 ::= MOSTRAR_NAVES DOS_PUNTOS BOLEANO:b {:mapa.setMostrarNavesNeutrales((boolean) b);:} COMA ATN4
+	|PRODUCCION DOS_PUNTOS NUMERO:n {:mapa.setProduccionNeutrales(Integer.parseInt((String) n));:} COMA ATN6;
 
 
-ATN4 ::= PRODUCCION DOS_PUNTOS NUMERO;
+ATN3 ::= MOSTRAR_NAVES DOS_PUNTOS BOLEANO:b {:mapa.setMostrarNavesNeutrales((boolean) b);:} COMA ATN5
+	|MOSTRAR_ESTADISTICAS DOS_PUNTOS BOLEANO:b {:mapa.setMostrarEstadisticasNeutrales((boolean) b);:} COMA ATN6;
 
 
-ATN5 ::= MOSTRAR_ESTADISTICAS DOS_PUNTOS BOLEANO;
+ATN4 ::= PRODUCCION DOS_PUNTOS NUMERO:n {:mapa.setProduccionNeutrales(Integer.parseInt((String) n));:};
 
 
-ATN6 ::= MOSTRAR_NAVES DOS_PUNTOS BOLEANO;
+ATN5 ::= MOSTRAR_ESTADISTICAS DOS_PUNTOS BOLEANO:b {:mapa.setMostrarEstadisticasNeutrales((boolean) b);:};
+
+
+ATN6 ::= MOSTRAR_NAVES DOS_PUNTOS BOLEANO:b {:mapa.setMostrarNavesNeutrales((boolean) b);:};
+
+
+
 
 ESTRUCTURA_PLANETAS ::=  LLAVES_A ATRIB_PLANETAS LLAVES_C COMA ESTRUCTURA_PLANETAS
 			|LLAVES_A ATRIB_PLANETAS LLAVES_C;
@@ -156,54 +218,54 @@ ESTRUCTURA_PLANETAS ::=  LLAVES_A ATRIB_PLANETAS LLAVES_C COMA ESTRUCTURA_PLANET
 ESTRUCTURA_PLANT_NEU ::= LLAVES_A ATRIB_PLANETAS LLAVES_C COMA ESTRUCTURA_PLANETAS
 			|LLAVES_A ATRIB_PLANETAS LLAVES_C;
 
-ATRIB_PLANETAS ::=   NOMBRE DOS_PUNTOS COMILLAS IDENTIFICADOR COMILLAS COMA ATP1
-                    |NAVES DOS_PUNTOS NUMERO COMA ATP2
-                    |PRODUCCION DOS_PUNTOS NUMERO COMA ATP3
-                    |PORCENTAJE_MUERTES DOS_PUNTOS NUMERO COMA ATP4 ;
+ATRIB_PLANETAS ::=   NOMBRE {:p = new Planeta();:} DOS_PUNTOS COMILLAS IDENTIFICADOR:a COMILLAS {:p.setNombre((String) a);:} COMA ATP1
+                    |NAVES {:p = new Planeta();:} DOS_PUNTOS NUMERO:n {:p.setNaves(Integer.parseInt((String) n));:} COMA ATP2
+                    |PRODUCCION {:p = new Planeta();:} DOS_PUNTOS NUMERO:n {:p.setProduccion(Integer.parseInt((String) n));:} COMA ATP3
+                    |PORCENTAJE_MUERTES {:p = new Planeta();:} DOS_PUNTOS NUMERO:n {:p.setPorcentajeMuertes(Double.parseDouble((String) n));:} COMA ATP4 ;
 
-ATP1 ::= NAVES DOS_PUNTOS NUMERO COMA ATP5
-        |PRODUCCION DOS_PUNTOS NUMERO COMA ATP6
-	|PORCENTAJE_MUERTES DOS_PUNTOS NUMERO COMA ATP7 ;
+ATP1 ::= NAVES DOS_PUNTOS NUMERO:n {:p.setNaves(Integer.parseInt((String) n));:} COMA ATP5
+        |PRODUCCION DOS_PUNTOS NUMERO:n {:p.setProduccion(Integer.parseInt((String) n));:} COMA ATP6
+	|PORCENTAJE_MUERTES DOS_PUNTOS NUMERO:n {:p.setPorcentajeMuertes(Double.parseDouble((String) n));:} COMA ATP7 ;
 
-ATP2 ::= NOMBRE DOS_PUNTOS COMILLAS IDENTIFICADOR COMILLAS COMA ATP5
-        |PRODUCCION DOS_PUNTOS NUMERO COMA ATP11
-	|PORCENTAJE_MUERTES DOS_PUNTOS NUMERO COMA ATP12 ;
+ATP2 ::= NOMBRE DOS_PUNTOS COMILLAS IDENTIFICADOR:a COMILLAS {:p.setNombre((String) a);:} COMA ATP5
+        |PRODUCCION DOS_PUNTOS NUMERO:n {:p.setProduccion(Integer.parseInt((String) n));:} COMA ATP11
+	|PORCENTAJE_MUERTES DOS_PUNTOS NUMERO:n {:p.setPorcentajeMuertes(Double.parseDouble((String) n));:} COMA ATP12 ;
 
-ATP3 ::= NOMBRE DOS_PUNTOS COMILLAS IDENTIFICADOR COMILLAS COMA ATP6
-            |NAVES DOS_PUNTOS NUMERO COMA ATP11
-            |PORCENTAJE_MUERTES DOS_PUNTOS NUMERO COMA ATP14 ;
-
-
-ATP4 ::= NOMBRE DOS_PUNTOS COMILLAS IDENTIFICADOR COMILLAS COMA ATP7
-	|NAVES DOS_PUNTOS NUMERO COMA ATP12
-	|PRODUCCION DOS_PUNTOS NUMERO COMA ATP14;
+ATP3 ::= NOMBRE DOS_PUNTOS COMILLAS IDENTIFICADOR:a COMILLAS {:p.setNombre((String) a);:} COMA ATP6
+            |NAVES DOS_PUNTOS NUMERO:n {:p.setNaves(Integer.parseInt((String) n));:} COMA ATP11
+            |PORCENTAJE_MUERTES DOS_PUNTOS NUMERO:n {:p.setPorcentajeMuertes(Double.parseDouble((String) n));:} COMA ATP14 ;
 
 
-ATP5 ::= PRODUCCION DOS_PUNTOS NUMERO COMA ATP8
-	|PORCENTAJE_MUERTES DOS_PUNTOS NUMERO COMA ATP9 ;
+ATP4 ::= NOMBRE DOS_PUNTOS COMILLAS IDENTIFICADOR:a COMILLAS {:p.setNombre((String) a);:} COMA ATP7
+	|NAVES DOS_PUNTOS NUMERO:n {:p.setNaves(Integer.parseInt((String) n));:} COMA ATP12
+	|PRODUCCION DOS_PUNTOS NUMERO:n {:p.setProduccion(Integer.parseInt((String) n));:} COMA ATP14;
 
-ATP6 ::= NAVES DOS_PUNTOS NUMERO COMA ATP8
-        |PORCENTAJE_MUERTES DOS_PUNTOS NUMERO COMA ATP10 ;
 
-ATP7 ::= NAVES DOS_PUNTOS NUMERO COMA ATP9
-	|PRODUCCION DOS_PUNTOS NUMERO COMA ATP10;
+ATP5 ::= PRODUCCION DOS_PUNTOS NUMERO:n {:p.setProduccion(Integer.parseInt((String) n));:} COMA ATP8
+	|PORCENTAJE_MUERTES DOS_PUNTOS NUMERO:n {:p.setPorcentajeMuertes(Double.parseDouble((String) n));:} COMA ATP9 ;
 
-ATP8 ::= PORCENTAJE_MUERTES DOS_PUNTOS NUMERO;
+ATP6 ::= NAVES DOS_PUNTOS NUMERO:n {:p.setNaves(Integer.parseInt((String) n));:} COMA ATP8
+        |PORCENTAJE_MUERTES DOS_PUNTOS NUMERO:n {:p.setPorcentajeMuertes(Double.parseDouble((String) n));:} COMA ATP10 ;
 
-ATP9 ::= PRODUCCION DOS_PUNTOS NUMERO;
+ATP7 ::= NAVES DOS_PUNTOS NUMERO:n {:p.setNaves(Integer.parseInt((String) n));:} COMA ATP9
+	|PRODUCCION DOS_PUNTOS NUMERO:n {:p.setProduccion(Integer.parseInt((String) n));:} COMA ATP10;
 
-ATP10 ::= NAVES DOS_PUNTOS NUMERO;
+ATP8 ::= PORCENTAJE_MUERTES DOS_PUNTOS NUMERO:n {:p.setPorcentajeMuertes(Double.parseDouble((String) n));:};
 
-ATP11 ::= NOMBRE DOS_PUNTOS COMILLAS IDENTIFICADOR COMILLAS COMA ATP8
-         |PORCENTAJE_MUERTES DOS_PUNTOS NUMERO COMA ATP13 ;
+ATP9 ::= PRODUCCION DOS_PUNTOS NUMERO:n {:p.setProduccion(Integer.parseInt((String) n));:};
 
-ATP12 ::= NOMBRE DOS_PUNTOS COMILLAS IDENTIFICADOR COMILLAS COMA ATP9
-         |PRODUCCION DOS_PUNTOS NUMERO COMA ATP13;
+ATP10 ::= NAVES DOS_PUNTOS NUMERO:n {:p.setNaves(Integer.parseInt((String) n));:};
 
-ATP13 ::= NOMBRE DOS_PUNTOS COMILLAS IDENTIFICADOR COMILLAS;
+ATP11 ::= NOMBRE DOS_PUNTOS COMILLAS IDENTIFICADOR:a COMILLAS {:p.setNombre((String) a);:} COMA ATP8
+         |PORCENTAJE_MUERTES DOS_PUNTOS NUMERO:n {:p.setPorcentajeMuertes(Double.parseDouble((String) n));:} COMA ATP13 ;
 
-ATP14 ::= NOMBRE DOS_PUNTOS COMILLAS IDENTIFICADOR COMILLAS COMA ATP10
-         |NAVES DOS_PUNTOS NUMERO COMA ATP13;
+ATP12 ::= NOMBRE DOS_PUNTOS COMILLAS IDENTIFICADOR:a COMILLAS {:p.setNombre((String) a);:} COMA ATP9
+         |PRODUCCION DOS_PUNTOS NUMERO:n {:p.setProduccion(Integer.parseInt((String) n));:} COMA ATP13;
+
+ATP13 ::= NOMBRE DOS_PUNTOS COMILLAS IDENTIFICADOR:a COMILLAS {:p.setNombre((String) a);:};
+
+ATP14 ::= NOMBRE DOS_PUNTOS COMILLAS IDENTIFICADOR:a COMILLAS {:p.setNombre((String) a);:} COMA ATP10
+         |NAVES DOS_PUNTOS NUMERO:n {:p.setNaves(Integer.parseInt((String) n));:} COMA ATP13;
 
 ESTRUCTURA_JUGADORES ::= LLAVES_A ATRIB_JUGADORES LLAVES_C COMA ESTRUCTURA_JUGADORES
 			|LLAVES_A ATRIB_JUGADORES LLAVES_C;
