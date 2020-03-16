@@ -75,5 +75,9 @@ public class Planeta {
         this.jugador = jugador;
     }
     
+    public void pintar(){
+        System.out.println("Nombre: "+nombre+" Naves: "+naves+" Produccion: "+produccion);
+    }
+    
     
 }

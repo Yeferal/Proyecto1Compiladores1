@@ -8,7 +8,12 @@ public class Jugador {
     private String nombre;
     private int tipo;
     private ArrayList<Planeta> planetas = new ArrayList<>();
+    private ArrayList<String> listaPlanetas = new ArrayList<>();
 
+    public Jugador(){
+        nombre=null;
+    }
+    
     public String getNombre() {
         return nombre;
     }
@@ -40,4 +45,15 @@ public class Jugador {
         return planetas.get(i);
     }
     
+    public void insertarPlaneta(String nombre){
+        listaPlanetas.add(nombre);
+    }
+    
+    public void pintar(){
+        System.out.print("Nombre: "+nombre+" tipo: "+tipo+"______________");
+        for (int i = 0; i < listaPlanetas.size(); i++) {
+            System.out.print((i+1)+" nombre: "+listaPlanetas.get(i)+"  ");
+        }
+        System.out.println("");
+    }
 }

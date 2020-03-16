@@ -9,16 +9,35 @@ import java.io.StringReader;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.JFileChooser;
+import objetos.Juego;
 
 public class VentanaJugar extends javax.swing.JFrame {
 
     Archivo archivo = new Archivo();
+    Juego juego;
 
     public VentanaJugar() {
         initComponents();
         this.setLocationRelativeTo(null);
         
         
+    }
+    
+    public void pintar(){
+        System.out.println("MAPAPAPA");
+        juego.getMapa().pintar();
+        System.out.println("Lista planetas");
+        for (int i = 0; i < juego.getListaPlanetas().size(); i++) {
+            juego.getListaPlanetas().get(i).pintar();
+        }
+        System.out.println("Lista planetas neutrales");
+        for (int i = 0; i < juego.getListaPlanetasNeutrales().size(); i++) {
+            juego.getListaPlanetasNeutrales().get(i).pintar();
+        }
+        System.out.println("Lista Jugadores");
+        for (int i = 0; i < juego.getListaJugadores().size(); i++) {
+            juego.getListaJugadores().get(i).pintar();
+        }
     }
 
     @SuppressWarnings("unchecked")
@@ -132,6 +151,9 @@ public class VentanaJugar extends javax.swing.JFrame {
                 AnalizadorSintactico sintacitico = new AnalizadorSintactico(lexico);
                 
                 sintacitico.parse();
+                juego = sintacitico.getJuego();
+                pintar();
+                
             } catch (Exception ex) {
                 ex.printStackTrace();
             }

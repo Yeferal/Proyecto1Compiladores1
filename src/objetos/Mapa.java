@@ -103,8 +103,8 @@ public class Mapa {
         this.mostrarEstadisticasNeutrales = mostrarEstadisticasNeutrales;
     }
     
-    public void stoString(){
-        System.out.println("////////////////////////////////////////////////////////");
+    public void pintar(){
+        System.out.println("____________________________________________________________________________________________");
         System.out.println(getId());
         System.out.println(getTamanioX());
         System.out.println(getTamanioY());
@@ -113,6 +113,7 @@ public class Mapa {
         System.out.println(isAcumular());
         System.out.println(isAlAzar());
         System.out.println(isMapaCiego());
+        System.out.println("____________________________________________________________________________________________");
     }
     
     

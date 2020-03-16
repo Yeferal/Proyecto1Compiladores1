@@ -4,11 +4,36 @@ import java_cup.runtime.Symbol;
 import java.util.ArrayList;
 import objetos.Mapa;
 import objetos.Planeta;
+import objetos.Jugador;
 import manejadores.*;
+import objetos.Juego;
 
 //Codigo para el parser, variables, metodos
 parser code
 {:
+    Juego juego;
+    Mapa mapa;
+    ManejadorMapa manejadorMapa;
+    ArrayList<Planeta> listaPlanetas;
+    ArrayList<Planeta> listaPlanetasNeutrales;
+    ArrayList<Jugador> listaJugadores;
+
+    public void setAtributos(ManejadorMapa manejadorMapa, Mapa mapa, ArrayList<Planeta> listaPlanetas, ArrayList<Planeta> listaPlanetasNeutrales, ArrayList<Jugador> listaJugadores){
+        this.mapa = mapa;
+        this.manejadorMapa = manejadorMapa;
+        this.listaPlanetas = listaPlanetas;
+        this.listaPlanetasNeutrales = listaPlanetasNeutrales;
+        this.listaJugadores = listaJugadores;
+        
+    }
+    public void setJuego(){
+        juego = new Juego(mapa,manejadorMapa,listaPlanetas,listaPlanetasNeutrales,listaJugadores);
+    }
+
+    public Juego getJuego(){
+        return juego;
+    }
+
     private Symbol s;
     public void syntaxError(Symbol s){
         this.s = s;
@@ -39,9 +64,12 @@ action code
     Mapa mapa = null;
     ArrayList<Planeta> listaPlanetas = new ArrayList<>();
     ArrayList<Planeta> listaPlanetasNeutrales = new ArrayList<>();
+    ArrayList<Jugador> listaJugadores = new ArrayList<>();
     ManejadorMapa manejadorMapa = null;
     ManejadorPlanetas manejadorPlanetas = new ManejadorPlanetas();
+    ManejadorJugador manejadorJugador = new ManejadorJugador();
     Planeta p;
+    Jugador jugador;
 :}
 
 //Declaraciones 
@@ -67,7 +95,7 @@ start with INICIO;
 
 //Reglas Semanticas
 
-INICIO ::=  LLAVES_A S0 LLAVES_C {:mapa.stoString();:};
+INICIO ::=  LLAVES_A S0 LLAVES_C {: parser.setAtributos(manejadorMapa, mapa, listaPlanetas, listaPlanetasNeutrales, listaJugadores); parser.setJuego();:};
 
 S0 ::= 	 MAPA DOS_PUNTOS LLAVES_A {: mapa = new Mapa(); manejadorMapa = new ManejadorMapa();:} ESTRUCTURA_MAPA LLAVES_C COMA S1
         |PLANETAS DOS_PUNTOS CORCHE_A ESTRUCTURA_PLANETAS CORCHE_C COMA S2
@@ -232,7 +260,7 @@ ESTRUCTURA_PLANT_NEU ::= LLAVES_A ATRIB_PLANETAS LLAVES_C {:
             if(manejadorPlanetas.isExistPlaneta(listaPlanetas,p)){
                 listaPlanetasNeutrales.add(p);
             }
-:} COMA ESTRUCTURA_PLANETAS
+:} COMA ESTRUCTURA_PLANT_NEU
 			|LLAVES_A ATRIB_PLANETAS LLAVES_C {: 
                         if(manejadorPlanetas.isExistPlaneta(listaPlanetas,p)){
                             listaPlanetasNeutrales.add(p);
@@ -334,31 +362,63 @@ ATP14 ::= NOMBRE DOS_PUNTOS COMILLAS IDENTIFICADOR:a COMILLAS {:
 
 
 
-ESTRUCTURA_JUGADORES ::= LLAVES_A ATRIB_JUGADORES LLAVES_C COMA ESTRUCTURA_JUGADORES
-			|LLAVES_A ATRIB_JUGADORES LLAVES_C;
+ESTRUCTURA_JUGADORES ::= LLAVES_A ATRIB_JUGADORES LLAVES_C {:
+                            if(jugador.getNombre()!=null){
+                                if(manejadorJugador.isExistJugador(listaJugadores,jugador)){
+                                    listaJugadores.add(jugador);
+                                }
+                            }
+:} COMA ESTRUCTURA_JUGADORES
+			|LLAVES_A ATRIB_JUGADORES LLAVES_C {:
+                            if(jugador.getNombre()!=null){
+                                listaJugadores.add(jugador);
+                            }
+:};
 
-ATRIB_JUGADORES ::= NOMBRE DOS_PUNTOS COMILLAS IDENTIFICADOR COMILLAS COMA ATJ1
-		    |PLANETAS_JUGADOR DOS_PUNTOS CORCHE_A PLANET_ASIG CORCHE_C COMA ATJ2
-		    |TIPO DOS_PUNTOS DIFICULTADES COMA ATJ3;
+ATRIB_JUGADORES ::= NOMBRE {:jugador = new Jugador();:} DOS_PUNTOS COMILLAS IDENTIFICADOR:a COMILLAS {:
+                        if(manejadorJugador.isCorrecto((String) a)){
+                            jugador.setNombre((String) a);
+                        }
+:} COMA ATJ1
+		    |PLANETAS_JUGADOR {:jugador = new Jugador();:} DOS_PUNTOS CORCHE_A PLANET_ASIG CORCHE_C COMA ATJ2
+		    |TIPO {:jugador = new Jugador();:} DOS_PUNTOS DIFICULTADES:n {:jugador.setTipo(Integer.parseInt(n.toString()));:} COMA ATJ3;
 
 ATJ1 ::= PLANETAS_JUGADOR DOS_PUNTOS CORCHE_A PLANET_ASIG CORCHE_C COMA ATJ4
-        |TIPO DOS_PUNTOS DIFICULTADES COMA ATJ5;
+        |TIPO DOS_PUNTOS DIFICULTADES:n {:jugador.setTipo(Integer.parseInt(n.toString()));:} COMA ATJ5;
 
-ATJ2 ::= NOMBRE DOS_PUNTOS COMILLAS IDENTIFICADOR COMILLAS COMA ATJ4
-        |TIPO DOS_PUNTOS DIFICULTADES COMA ATJ6;
+ATJ2 ::= NOMBRE DOS_PUNTOS COMILLAS IDENTIFICADOR:a COMILLAS {:
+                        if(manejadorJugador.isCorrecto((String) a)){
+                            jugador.setNombre((String) a);
+                        }
+:} COMA ATJ4
+        |TIPO DOS_PUNTOS DIFICULTADES:n {:jugador.setTipo(Integer.parseInt(n.toString()));:} COMA ATJ6;
 
-ATJ3 ::= NOMBRE DOS_PUNTOS COMILLAS IDENTIFICADOR COMILLAS COMA ATJ5
+ATJ3 ::= NOMBRE DOS_PUNTOS COMILLAS IDENTIFICADOR:a COMILLAS {:
+                        if(manejadorJugador.isCorrecto((String) a)){
+                            jugador.setNombre((String) a);
+                        }
+:} COMA ATJ5
         |PLANETAS_JUGADOR DOS_PUNTOS CORCHE_A PLANET_ASIG CORCHE_C COMA ATJ6;
 
-ATJ4 ::= TIPO DOS_PUNTOS DIFICULTADES;
+ATJ4 ::= TIPO DOS_PUNTOS DIFICULTADES:n {:jugador.setTipo(Integer.parseInt(n.toString()));:} ;
 
 ATJ5 ::= PLANETAS_JUGADOR DOS_PUNTOS CORCHE_A PLANET_ASIG CORCHE_C;
 
-ATJ6 ::= NOMBRE DOS_PUNTOS COMILLAS IDENTIFICADOR COMILLAS;
+ATJ6 ::= NOMBRE DOS_PUNTOS COMILLAS IDENTIFICADOR:a COMILLAS {:
+                        if(manejadorJugador.isCorrecto((String) a)){
+                            jugador.setNombre((String) a);
+                        }
+:};
 
-PLANET_ASIG ::=  COMILLAS IDENTIFICADOR COMILLAS COMA PLANET_ASIG
-                |COMILLAS IDENTIFICADOR COMILLAS;
+PLANET_ASIG ::=  COMILLAS IDENTIFICADOR:a COMILLAS {:
+                    if(manejadorPlanetas.isCorrecto((String) a)){
+                        jugador.insertarPlaneta((String) a);
+                    }:} COMA PLANET_ASIG
+                |COMILLAS IDENTIFICADOR:a COMILLAS {:
+                    if(manejadorPlanetas.isCorrecto((String) a)){
+                        jugador.insertarPlaneta((String) a);
+                    }:};
 
-DIFICULTADES ::= HUMANO
-		|FACIL
-		|DIFICIL;
+DIFICULTADES ::= HUMANO {:RESULT=0;:}
+		|FACIL {:RESULT=1;:}
+		|DIFICIL {:RESULT=2;:};
