@@ -29,11 +29,19 @@ public class ManejadorPlanetas {
     
     public boolean isExistPlaneta(ArrayList<Planeta> planetas, Planeta p){
         for (int i = 0; i < planetas.size(); i++) {
-            if(planetas.get(i).getNombre().equals(p.getNombre())){
+            if(p.getNombre()==null || planetas.get(i).getNombre().equals(p.getNombre())){
                 return false;
             }
         }
+        
         return true;
+    }
+    
+    public boolean isProduccion(Planeta p){
+        if(p.getProduccion()!=0){
+            return true;
+        }
+        return false;
     }
     
 }

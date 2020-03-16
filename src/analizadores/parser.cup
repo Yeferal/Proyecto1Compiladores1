@@ -1,6 +1,7 @@
 //codigo usuario
 package analizadores;
 import java_cup.runtime.Symbol;
+import java.util.ArrayList;
 import objetos.Mapa;
 import objetos.Planeta;
 import manejadores.*;
@@ -36,6 +37,8 @@ parser code
 action code
 {:
     Mapa mapa = null;
+    ArrayList<Planeta> listaPlanetas = new ArrayList<>();
+    ArrayList<Planeta> listaPlanetasNeutrales = new ArrayList<>();
     ManejadorMapa manejadorMapa = null;
     ManejadorPlanetas manejadorPlanetas = new ManejadorPlanetas();
     Planeta p;
@@ -212,13 +215,35 @@ ATN6 ::= MOSTRAR_NAVES DOS_PUNTOS BOLEANO:b {:mapa.setMostrarNavesNeutrales((boo
 
 
 
-ESTRUCTURA_PLANETAS ::=  LLAVES_A ATRIB_PLANETAS LLAVES_C COMA ESTRUCTURA_PLANETAS
-			|LLAVES_A ATRIB_PLANETAS LLAVES_C;
+ESTRUCTURA_PLANETAS ::=  LLAVES_A ATRIB_PLANETAS LLAVES_C {:
+            if(manejadorPlanetas.isExistPlaneta(listaPlanetas,p)){
+                if(manejadorPlanetas.isProduccion(p)){
+                    listaPlanetas.add(p);
+                }
+            }:} COMA ESTRUCTURA_PLANETAS
+			|LLAVES_A ATRIB_PLANETAS LLAVES_C {:
+            if(manejadorPlanetas.isExistPlaneta(listaPlanetas,p)){
+                if(manejadorPlanetas.isProduccion(p)){
+                    listaPlanetas.add(p);
+                }
+            }:};
 
-ESTRUCTURA_PLANT_NEU ::= LLAVES_A ATRIB_PLANETAS LLAVES_C COMA ESTRUCTURA_PLANETAS
-			|LLAVES_A ATRIB_PLANETAS LLAVES_C;
+ESTRUCTURA_PLANT_NEU ::= LLAVES_A ATRIB_PLANETAS LLAVES_C {: 
+            if(manejadorPlanetas.isExistPlaneta(listaPlanetas,p)){
+                listaPlanetasNeutrales.add(p);
+            }
+:} COMA ESTRUCTURA_PLANETAS
+			|LLAVES_A ATRIB_PLANETAS LLAVES_C {: 
+                        if(manejadorPlanetas.isExistPlaneta(listaPlanetas,p)){
+                            listaPlanetasNeutrales.add(p);
+                        }
+                    :};
 
-ATRIB_PLANETAS ::=   NOMBRE {:p = new Planeta();:} DOS_PUNTOS COMILLAS IDENTIFICADOR:a COMILLAS {:p.setNombre((String) a);:} COMA ATP1
+ATRIB_PLANETAS ::=   NOMBRE {:p = new Planeta();:} DOS_PUNTOS COMILLAS IDENTIFICADOR:a COMILLAS {:
+                    if(manejadorPlanetas.isCorrecto((String) a)){
+                        p.setNombre((String) a);
+                    }else{p.setNombre(null);}:} COMA ATP1
+
                     |NAVES {:p = new Planeta();:} DOS_PUNTOS NUMERO:n {:p.setNaves(Integer.parseInt((String) n));:} COMA ATP2
                     |PRODUCCION {:p = new Planeta();:} DOS_PUNTOS NUMERO:n {:p.setProduccion(Integer.parseInt((String) n));:} COMA ATP3
                     |PORCENTAJE_MUERTES {:p = new Planeta();:} DOS_PUNTOS NUMERO:n {:p.setPorcentajeMuertes(Double.parseDouble((String) n));:} COMA ATP4 ;
@@ -227,16 +252,25 @@ ATP1 ::= NAVES DOS_PUNTOS NUMERO:n {:p.setNaves(Integer.parseInt((String) n));:}
         |PRODUCCION DOS_PUNTOS NUMERO:n {:p.setProduccion(Integer.parseInt((String) n));:} COMA ATP6
 	|PORCENTAJE_MUERTES DOS_PUNTOS NUMERO:n {:p.setPorcentajeMuertes(Double.parseDouble((String) n));:} COMA ATP7 ;
 
-ATP2 ::= NOMBRE DOS_PUNTOS COMILLAS IDENTIFICADOR:a COMILLAS {:p.setNombre((String) a);:} COMA ATP5
+ATP2 ::= NOMBRE DOS_PUNTOS COMILLAS IDENTIFICADOR:a COMILLAS {:
+                    if(manejadorPlanetas.isCorrecto((String) a)){
+                        p.setNombre((String) a);
+                    }else{p.setNombre(null);}:} COMA ATP5
         |PRODUCCION DOS_PUNTOS NUMERO:n {:p.setProduccion(Integer.parseInt((String) n));:} COMA ATP11
 	|PORCENTAJE_MUERTES DOS_PUNTOS NUMERO:n {:p.setPorcentajeMuertes(Double.parseDouble((String) n));:} COMA ATP12 ;
 
-ATP3 ::= NOMBRE DOS_PUNTOS COMILLAS IDENTIFICADOR:a COMILLAS {:p.setNombre((String) a);:} COMA ATP6
+ATP3 ::= NOMBRE DOS_PUNTOS COMILLAS IDENTIFICADOR:a COMILLAS {:
+                    if(manejadorPlanetas.isCorrecto((String) a)){
+                        p.setNombre((String) a);
+                    }else{p.setNombre(null);}:} COMA ATP6
             |NAVES DOS_PUNTOS NUMERO:n {:p.setNaves(Integer.parseInt((String) n));:} COMA ATP11
             |PORCENTAJE_MUERTES DOS_PUNTOS NUMERO:n {:p.setPorcentajeMuertes(Double.parseDouble((String) n));:} COMA ATP14 ;
 
 
-ATP4 ::= NOMBRE DOS_PUNTOS COMILLAS IDENTIFICADOR:a COMILLAS {:p.setNombre((String) a);:} COMA ATP7
+ATP4 ::= NOMBRE DOS_PUNTOS COMILLAS IDENTIFICADOR:a COMILLAS {:
+                    if(manejadorPlanetas.isCorrecto((String) a)){
+                        p.setNombre((String) a);
+                    }else{p.setNombre(null);}:} COMA ATP7
 	|NAVES DOS_PUNTOS NUMERO:n {:p.setNaves(Integer.parseInt((String) n));:} COMA ATP12
 	|PRODUCCION DOS_PUNTOS NUMERO:n {:p.setProduccion(Integer.parseInt((String) n));:} COMA ATP14;
 
@@ -252,20 +286,53 @@ ATP7 ::= NAVES DOS_PUNTOS NUMERO:n {:p.setNaves(Integer.parseInt((String) n));:}
 
 ATP8 ::= PORCENTAJE_MUERTES DOS_PUNTOS NUMERO:n {:p.setPorcentajeMuertes(Double.parseDouble((String) n));:};
 
-ATP9 ::= PRODUCCION DOS_PUNTOS NUMERO:n {:p.setProduccion(Integer.parseInt((String) n));:};
+ATP9 ::= PRODUCCION DOS_PUNTOS NUMERO:n {:p.setProduccion(Integer.parseInt((String) n));    
+            if(manejadorPlanetas.isExistPlaneta(listaPlanetas,p)){
+                listaPlanetas.add(p);
+            }
+:}
+        | ;
+ATP10 ::= NAVES DOS_PUNTOS NUMERO:n {:p.setNaves(Integer.parseInt((String) n));    
+            if(manejadorPlanetas.isExistPlaneta(listaPlanetas,p)){
+                listaPlanetas.add(p);
+            }
+:};
 
-ATP10 ::= NAVES DOS_PUNTOS NUMERO:n {:p.setNaves(Integer.parseInt((String) n));:};
-
-ATP11 ::= NOMBRE DOS_PUNTOS COMILLAS IDENTIFICADOR:a COMILLAS {:p.setNombre((String) a);:} COMA ATP8
+ATP11 ::= NOMBRE DOS_PUNTOS COMILLAS IDENTIFICADOR:a COMILLAS {:
+                    if(manejadorPlanetas.isCorrecto((String) a)){
+                        p.setNombre((String) a);
+                    }else{p.setNombre(null);}:} COMA ATP8
          |PORCENTAJE_MUERTES DOS_PUNTOS NUMERO:n {:p.setPorcentajeMuertes(Double.parseDouble((String) n));:} COMA ATP13 ;
 
-ATP12 ::= NOMBRE DOS_PUNTOS COMILLAS IDENTIFICADOR:a COMILLAS {:p.setNombre((String) a);:} COMA ATP9
+ATP12 ::= NOMBRE DOS_PUNTOS COMILLAS IDENTIFICADOR:a COMILLAS {:
+                    if(manejadorPlanetas.isCorrecto((String) a)){
+                        p.setNombre((String) a);
+                    }else{p.setNombre(null);}:} COMA ATP9
          |PRODUCCION DOS_PUNTOS NUMERO:n {:p.setProduccion(Integer.parseInt((String) n));:} COMA ATP13;
 
-ATP13 ::= NOMBRE DOS_PUNTOS COMILLAS IDENTIFICADOR:a COMILLAS {:p.setNombre((String) a);:};
+ATP13 ::= NOMBRE DOS_PUNTOS COMILLAS IDENTIFICADOR:a COMILLAS {:
+                    if(manejadorPlanetas.isCorrecto((String) a)){
+                        p.setNombre((String) a);
+                    }else{p.setNombre(null);}    
 
-ATP14 ::= NOMBRE DOS_PUNTOS COMILLAS IDENTIFICADOR:a COMILLAS {:p.setNombre((String) a);:} COMA ATP10
+                    if(manejadorPlanetas.isExistPlaneta(listaPlanetas,p)){
+                        listaPlanetas.add(p);
+                    }
+:};
+
+ATP14 ::= NOMBRE DOS_PUNTOS COMILLAS IDENTIFICADOR:a COMILLAS {:
+                    if(manejadorPlanetas.isCorrecto((String) a)){
+                        p.setNombre((String) a);
+                    }else{p.setNombre(null);}:} COMA ATP10
          |NAVES DOS_PUNTOS NUMERO:n {:p.setNaves(Integer.parseInt((String) n));:} COMA ATP13;
+
+
+
+
+
+
+
+
 
 ESTRUCTURA_JUGADORES ::= LLAVES_A ATRIB_JUGADORES LLAVES_C COMA ESTRUCTURA_JUGADORES
 			|LLAVES_A ATRIB_JUGADORES LLAVES_C;

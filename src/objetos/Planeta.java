@@ -8,6 +8,12 @@ public class Planeta {
     private double porcentajeMuertes;
     private int tipo;
 
+    public Planeta(){
+        produccion = 0;
+        nombre = null;
+        
+    }
+    
     public String getNombre() {
         return nombre;
     }
