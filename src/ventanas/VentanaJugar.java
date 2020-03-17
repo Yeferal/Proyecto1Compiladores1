@@ -4,10 +4,16 @@ package ventanas;
 import analizadores.AnalizadorLexico;
 import analizadores.AnalizadorSintactico;
 import archivos.Archivo;
+import game.Tablero;
+import java.awt.GridLayout;
+import java.awt.Image;
 import java.io.File;
 import java.io.StringReader;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.swing.Icon;
+import javax.swing.ImageIcon;
+import javax.swing.JButton;
 import javax.swing.JFileChooser;
 import objetos.Juego;
 
@@ -15,11 +21,15 @@ public class VentanaJugar extends javax.swing.JFrame {
 
     Archivo archivo = new Archivo();
     Juego juego;
+    Tablero tablero = new Tablero();
+    JButton tableroBotones [][];
 
     public VentanaJugar() {
         initComponents();
         this.setLocationRelativeTo(null);
-        
+        panel2.setOpaque(false);
+        ImageIcon fondo = new ImageIcon("src/planetas/u2.jpg");
+        labelFondo.setIcon(new ImageIcon(fondo.getImage().getScaledInstance(labelFondo.getWidth(), labelFondo.getHeight(), Image.SCALE_SMOOTH)));
         
     }
     
@@ -37,6 +47,51 @@ public class VentanaJugar extends javax.swing.JFrame {
         System.out.println("Lista Jugadores");
         for (int i = 0; i < juego.getListaJugadores().size(); i++) {
             juego.getListaJugadores().get(i).pintar();
+        }
+        tablero.generarTablero(juego.getMapa().getTamanioX(), juego.getMapa().getTamanioY());
+        tableroBotones = tablero.getTablero();
+        
+        
+        for (int i = 0; i < juego.getMapa().getTamanioX(); i++) {
+            for (int j = 0; j < juego.getMapa().getTamanioY(); j++) {
+                //System.out.println(i+", "+j);
+                panel2.add(tableroBotones[i][j]);
+                
+                
+            }
+        }
+        generarIconos();
+        panel2.setLayout(new GridLayout(juego.getMapa().getTamanioX(),juego.getMapa().getTamanioY()));
+        panel2.validate();
+        panel2.repaint();
+        
+    }
+    
+    public void generarIconos(){
+        int x;
+        int y;
+        for(int i =0; i<juego.getListaPlanetasNeutrales().size();i++){
+            boolean vacio = true;
+            do {
+                x = (int) (Math.random()*juego.getMapa().getTamanioX());
+                y = (int) (Math.random()*juego.getMapa().getTamanioY());
+                if(tableroBotones[x][y].getIcon()==null){
+                    tableroBotones[x][y].setIcon(tablero.getIcono(tableroBotones[x][y].getWidth(),tableroBotones[x][y].getHeight()));
+                    vacio = false;
+                }
+            } while (vacio);
+        }
+        
+        for(int i =0; i<juego.getListaPlanetas().size();i++){
+            boolean vacio = true;
+            do {
+                x = (int) (Math.random()*juego.getMapa().getTamanioX());
+                y = (int) (Math.random()*juego.getMapa().getTamanioY());
+                if(tableroBotones[x][y].getIcon()==null){
+                    tableroBotones[x][y].setIcon(tablero.getIcono(tableroBotones[x][y].getWidth(),tableroBotones[x][y].getHeight()));
+                    vacio = false;
+                }
+            } while (vacio);
         }
     }
 
@@ -73,7 +128,17 @@ public class VentanaJugar extends javax.swing.JFrame {
 
         getContentPane().add(panel1, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 0, 1010, 60));
 
-        panel2.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
+        javax.swing.GroupLayout panel2Layout = new javax.swing.GroupLayout(panel2);
+        panel2.setLayout(panel2Layout);
+        panel2Layout.setHorizontalGroup(
+            panel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGap(0, 710, Short.MAX_VALUE)
+        );
+        panel2Layout.setVerticalGroup(
+            panel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGap(0, 590, Short.MAX_VALUE)
+        );
+
         getContentPane().add(panel2, new org.netbeans.lib.awtextra.AbsoluteConstraints(150, 70, 710, 590));
 
         panel3.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
