@@ -15,6 +15,10 @@ public class Mapa {
         mostrarEstadisticasNeutrales = false;
     }
     
+    public int getNumeroCuadros(){
+        return tamanioX*tamanioY;
+    }
+    
     public String getId() {
         return id;
     }

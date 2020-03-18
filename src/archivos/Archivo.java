@@ -21,7 +21,7 @@ public class Archivo {
 
          String linea;
          while((linea=br.readLine())!=null)
-            texto+=linea;
+            texto+=linea+"\n";
       }
       catch(Exception e){
          e.printStackTrace();
@@ -34,6 +34,7 @@ public class Archivo {
             e2.printStackTrace();
          }
       } 
+        System.out.println(texto);
         return texto;
     }
     

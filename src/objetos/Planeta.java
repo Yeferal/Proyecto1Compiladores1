@@ -7,11 +7,12 @@ public class Planeta {
     private int naves, produccion, jugador, coordenadaX, coordenadaY;
     private double porcentajeMuertes;
     private int tipo;
+    private boolean isProduccion;
 
     public Planeta(){
         produccion = 0;
         nombre = null;
-        
+        isProduccion = false;
     }
     
     public String getNombre() {
@@ -35,6 +36,7 @@ public class Planeta {
     }
 
     public void setProduccion(int produccion) {
+        isProduccion = true;
         this.produccion = produccion;
     }
 
@@ -74,9 +76,14 @@ public class Planeta {
     public void setJugador(int jugador) {
         this.jugador = jugador;
     }
+
+    public boolean isIsProduccion() {
+        return isProduccion;
+    }
+    
     
     public void pintar(){
-        System.out.println("Nombre: "+nombre+" Naves: "+naves+" Produccion: "+produccion);
+        System.out.println("Nombre: "+nombre+" Naves: "+naves+" Produccion: "+produccion+" Tipo: "+tipo);
     }
     
     

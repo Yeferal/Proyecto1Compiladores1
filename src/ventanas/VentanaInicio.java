@@ -1,6 +1,8 @@
 
 package ventanas;
 
+import javax.swing.JOptionPane;
+
 public class VentanaInicio extends javax.swing.JFrame {
 
     VentanaJugar ventanaJugar = new VentanaJugar();
@@ -81,6 +83,9 @@ public class VentanaInicio extends javax.swing.JFrame {
     private void botonJugarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_botonJugarActionPerformed
        
         this.setVisible(false);
+        ventanaJugar.panel1.setVisible(false);
+        ventanaJugar.panel3.setVisible(false);
+        ventanaJugar.panelOpciones.setVisible(false);
         ventanaJugar.setVisible(true);
         
     }//GEN-LAST:event_botonJugarActionPerformed

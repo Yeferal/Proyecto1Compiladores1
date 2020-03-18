@@ -39,7 +39,7 @@ public class ManejadorMapa {
             case 8:
                 return isBFinalizacion();
             default:
-                    return true;
+                return true;
         }
     }
     
@@ -66,6 +66,7 @@ public class ManejadorMapa {
             bAlAzar = true;
             return false;
         }
+        //
         completo = false;
         return true;
     }
@@ -83,6 +84,7 @@ public class ManejadorMapa {
             bMapaC = true;
             return false;
         }
+        //
         completo = false;
         return true;
     }
@@ -91,6 +93,7 @@ public class ManejadorMapa {
             bAcumular = true;
             return false;
         }
+        //
         completo = false;
         return true;
     }
@@ -109,7 +112,46 @@ public class ManejadorMapa {
             bFinalizacion = true;
             return false;
         }
+        //
         completo = false;
         return true;
     }
+
+    public boolean isbId() {
+        return bId;
+    }
+
+    public boolean isbTamanio() {
+        return bTamanio;
+    }
+
+    public boolean isbAlAzar() {
+        return bAlAzar;
+    }
+
+    public boolean isbPlanet() {
+        return bPlanet;
+    }
+
+    public boolean isbMapaC() {
+        return bMapaC;
+    }
+
+    public boolean isbAcumular() {
+        return bAcumular;
+    }
+
+    public boolean isbNutrales() {
+        return bNutrales;
+    }
+
+    public boolean isbFinalizacion() {
+        return bFinalizacion;
+    }
+
+    public boolean isCompleto() {
+        return completo;
+    }
+    
+    
 }

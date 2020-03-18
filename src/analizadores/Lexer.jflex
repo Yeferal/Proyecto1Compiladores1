@@ -12,10 +12,11 @@ import java_cup.runtime.*;
 %cupsym Simbolos
 %cup
 %char
+%line
 %column
 %full
 //%ignorecase
-%line
+
 %unicode
 
     //expreciones regulares
