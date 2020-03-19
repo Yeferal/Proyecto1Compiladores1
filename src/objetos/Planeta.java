@@ -7,12 +7,13 @@ public class Planeta {
     private int naves, produccion, jugador, coordenadaX, coordenadaY;
     private double porcentajeMuertes;
     private int tipo;
-    private boolean isProduccion;
+    private boolean isProduccion, tieneJugador;
 
     public Planeta(){
         produccion = 0;
         nombre = null;
         isProduccion = false;
+        tieneJugador = false;
     }
     
     public String getNombre() {
@@ -80,6 +81,15 @@ public class Planeta {
     public boolean isIsProduccion() {
         return isProduccion;
     }
+
+    public boolean isTieneJugador() {
+        return tieneJugador;
+    }
+
+    public void setTieneJugador(boolean tieneJugador) {
+        this.tieneJugador = tieneJugador;
+    }
+    
     
     
     public void pintar(){

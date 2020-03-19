@@ -26,6 +26,8 @@ public class VentanaJugar extends javax.swing.JFrame {
     Juego juego;
     Tablero tablero = new Tablero();
     JButton tableroBotones [][];
+    VentanaNuevoMapa ventanaNuevoMapa = new VentanaNuevoMapa(this);
+    String pathMapa;
 
     public VentanaJugar() {
         initComponents();
@@ -42,14 +44,13 @@ public class VentanaJugar extends javax.swing.JFrame {
                 //pintar();
                 //Generar Nutrales aleatorios
                 juego.setListaPlanetasNeutrales(generadorAleatorio.generarNeutralesAleatorios(juego.getMapa().getPlanetasNeutrales(), juego.getMapa().isMostrarNavesNeutrales(), juego.getMapa().isMostrarEstadisticasNeutrales(), juego.getMapa().getProduccionNeutrales()));
-                
-                
+                pintar();
             }else{
                 JOptionPane.showMessageDialog(null, "EL NUMERO DE CASILLAS ES MENOR AL NUMERO DE PLANETAS");
             }
         }else{
             if(juego.getMapa().getNumeroCuadros()>=(juego.getListaPlanetasNeutrales().size()+juego.getListaPlanetas().size())){
-            pintar();
+                pintar();
             
             
             
@@ -267,6 +268,11 @@ public class VentanaJugar extends javax.swing.JFrame {
                 menuItemNuevoJuegoMouseClicked(evt);
             }
         });
+        menuItemNuevoJuego.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                menuItemNuevoJuegoActionPerformed(evt);
+            }
+        });
         menuJugar.add(menuItemNuevoJuego);
 
         menuItemLeer.setText("Leer Mapa");
@@ -325,6 +331,7 @@ public class VentanaJugar extends javax.swing.JFrame {
         if(file!=null){
             try {
                 ruta = file.getPath();
+                pathMapa = ruta;
                 AnalizadorLexico lexico = new AnalizadorLexico(new StringReader(archivo.leerArchivo(ruta)));
                 AnalizadorSintactico sintacitico = new AnalizadorSintactico(lexico);
                 
@@ -343,6 +350,12 @@ public class VentanaJugar extends javax.swing.JFrame {
             }
         }
     }//GEN-LAST:event_menuItemLeerActionPerformed
+
+    private void menuItemNuevoJuegoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_menuItemNuevoJuegoActionPerformed
+        ventanaNuevoMapa.setVisible(true);
+        ventanaNuevoMapa.limpiar();
+        this.setVisible(false);
+    }//GEN-LAST:event_menuItemNuevoJuegoActionPerformed
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton botonEnviarNaves;

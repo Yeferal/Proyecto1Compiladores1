@@ -48,6 +48,16 @@ public class Jugador {
     public void insertarPlaneta(String nombre){
         listaPlanetas.add(nombre);
     }
+
+    public ArrayList<String> getListaPlanetas() {
+        return listaPlanetas;
+    }
+
+    public void setListaPlanetas(ArrayList<String> listaPlanetas) {
+        this.listaPlanetas = listaPlanetas;
+    }
+    
+    
     
     public void pintar(){
         System.out.print("Nombre: "+nombre+" tipo: "+tipo+"______________");
