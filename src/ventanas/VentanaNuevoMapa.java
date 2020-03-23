@@ -1,7 +1,11 @@
 
 package ventanas;
 
+import archivos.GeneradorArchivoMapa;
+import archivos.GuardarArchivo;
+import java.io.File;
 import java.util.ArrayList;
+import javax.swing.JFileChooser;
 import javax.swing.JOptionPane;
 import javax.swing.table.DefaultTableModel;
 import manejadores.ManejadorMapa;
@@ -25,6 +29,7 @@ public class VentanaNuevoMapa extends javax.swing.JFrame {
     public int tipo, posicion, posicionJ,posicionP;
     private boolean seleccion1, seleccion2, seleccion3, seleccion4;
     private String nick;
+    private GeneradorArchivoMapa generadorArchivoMapa = new GeneradorArchivoMapa();
     
     public VentanaNuevoMapa(VentanaJugar ventanaJugar) {
         initComponents();
@@ -189,6 +194,37 @@ public class VentanaNuevoMapa extends javax.swing.JFrame {
         seleccion4 = false;
     }
     
+    public void escribirArchivo(String texto){
+        GuardarArchivo guardarArchivo = new GuardarArchivo();
+        JFileChooser fileChooser = new JFileChooser();
+        fileChooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
+        fileChooser.showOpenDialog(this);
+        File file = fileChooser.getSelectedFile();
+        
+        String ruta = "";
+        if(file!=null){
+            ruta = file.getPath();
+            String nombreProyecto = JOptionPane.showInputDialog("Escriba el nombre del Mapa");
+            guardarArchivo.crearJSON(nombreProyecto, ruta, texto);
+            JOptionPane.showMessageDialog(null, "Se guardo el mapa");
+        }
+    }
+    
+    public Mapa setMapa(){
+        Mapa mapa = new Mapa();
+        mapa.setId(textFieldNombreMapa.getText());
+        mapa.setTamanioX((int) spinnerFila.getValue());
+        mapa.setTamanioY((int) spinnerColumnas.getValue());
+        mapa.setAlAzar(checkBoxAlAzar.isSelected());
+        mapa.setPlanetasNeutrales((int) spinnerNoPlanetasN.getValue());
+        mapa.setMapaCiego(checkBoxMapaCiego.isSelected());
+        mapa.setAcumular(checkBoxAcumular.isSelected());
+        mapa.setMostrarNavesNeutrales(checkBoxMostrarNaves.isSelected());
+        mapa.setMostrarEstadisticasNeutrales(checkBoxMostrarEstadisticas.isSelected());
+        mapa.setProduccionNeutrales((int) spinnerProduccion.getValue());
+        mapa.setFinalizacion((int) spinnerFinalizacion.getValue());
+        return mapa;
+    }
 
     @SuppressWarnings("unchecked")
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
@@ -214,7 +250,7 @@ public class VentanaNuevoMapa extends javax.swing.JFrame {
         labelProduccion = new javax.swing.JLabel();
         spinnerProduccion = new javax.swing.JSpinner();
         jSeparator1 = new javax.swing.JSeparator();
-        botonCancelar1 = new javax.swing.JButton();
+        botonCancelar = new javax.swing.JButton();
         panel2 = new javax.swing.JPanel();
         botonAniadirPN = new javax.swing.JButton();
         botonQuitarPN = new javax.swing.JButton();
@@ -224,7 +260,7 @@ public class VentanaNuevoMapa extends javax.swing.JFrame {
         labelPlanetas = new javax.swing.JLabel();
         botonAniadirP = new javax.swing.JButton();
         botonQuitarP = new javax.swing.JButton();
-        botonSiguiente3 = new javax.swing.JButton();
+        botonGuardar = new javax.swing.JButton();
         jScrollPane1 = new javax.swing.JScrollPane();
         tablaNeutrales = new javax.swing.JTable();
         jScrollPane3 = new javax.swing.JScrollPane();
@@ -277,10 +313,10 @@ public class VentanaNuevoMapa extends javax.swing.JFrame {
 
         spinnerProduccion.setModel(new javax.swing.SpinnerNumberModel(0, 0, null, 1));
 
-        botonCancelar1.setText("Cancelar");
-        botonCancelar1.addActionListener(new java.awt.event.ActionListener() {
+        botonCancelar.setText("Cancelar");
+        botonCancelar.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                botonCancelar1ActionPerformed(evt);
+                botonCancelarActionPerformed(evt);
             }
         });
 
@@ -302,19 +338,18 @@ public class VentanaNuevoMapa extends javax.swing.JFrame {
                                         .addGap(29, 29, 29)
                                         .addComponent(labelNeutrales))
                                     .addComponent(checkBoxAcumular)
-                                    .addGroup(panel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                                        .addGroup(panel1Layout.createSequentialGroup()
-                                            .addComponent(labelFilas)
-                                            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                            .addComponent(spinnerFila, javax.swing.GroupLayout.PREFERRED_SIZE, 60, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                            .addComponent(labelColumnas)
-                                            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                            .addComponent(spinnerColumnas, javax.swing.GroupLayout.PREFERRED_SIZE, 62, javax.swing.GroupLayout.PREFERRED_SIZE))
-                                        .addGroup(panel1Layout.createSequentialGroup()
-                                            .addComponent(labelNombreMapa)
-                                            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                            .addComponent(textFieldNombreMapa)))
+                                    .addGroup(panel1Layout.createSequentialGroup()
+                                        .addComponent(labelFilas)
+                                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                        .addComponent(spinnerFila, javax.swing.GroupLayout.PREFERRED_SIZE, 60, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                        .addComponent(labelColumnas)
+                                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                        .addComponent(spinnerColumnas, javax.swing.GroupLayout.PREFERRED_SIZE, 62, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                    .addGroup(panel1Layout.createSequentialGroup()
+                                        .addComponent(labelNombreMapa)
+                                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                        .addComponent(textFieldNombreMapa))
                                     .addComponent(checkBoxMapaCiego)
                                     .addComponent(checkBoxAlAzar)
                                     .addGroup(panel1Layout.createSequentialGroup()
@@ -331,7 +366,7 @@ public class VentanaNuevoMapa extends javax.swing.JFrame {
                                         .addComponent(spinnerProduccion))))
                             .addGroup(panel1Layout.createSequentialGroup()
                                 .addContainerGap()
-                                .addComponent(botonCancelar1)))
+                                .addComponent(botonCancelar)))
                         .addGap(0, 39, Short.MAX_VALUE)))
                 .addContainerGap())
         );
@@ -372,11 +407,11 @@ public class VentanaNuevoMapa extends javax.swing.JFrame {
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(checkBoxMostrarEstadisticas)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(panel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(labelProduccion)
-                    .addComponent(spinnerProduccion, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addGroup(panel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(spinnerProduccion, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(labelProduccion))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 334, Short.MAX_VALUE)
-                .addComponent(botonCancelar1)
+                .addComponent(botonCancelar)
                 .addContainerGap())
         );
 
@@ -439,13 +474,13 @@ public class VentanaNuevoMapa extends javax.swing.JFrame {
         });
         panel2.add(botonQuitarP, new org.netbeans.lib.awtextra.AbsoluteConstraints(650, 290, -1, -1));
 
-        botonSiguiente3.setText("Siguiente");
-        botonSiguiente3.addActionListener(new java.awt.event.ActionListener() {
+        botonGuardar.setText("Guardar");
+        botonGuardar.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                botonSiguiente3ActionPerformed(evt);
+                botonGuardarActionPerformed(evt);
             }
         });
-        panel2.add(botonSiguiente3, new org.netbeans.lib.awtextra.AbsoluteConstraints(830, 730, -1, -1));
+        panel2.add(botonGuardar, new org.netbeans.lib.awtextra.AbsoluteConstraints(830, 730, -1, -1));
 
         tablaNeutrales.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
@@ -553,10 +588,24 @@ public class VentanaNuevoMapa extends javax.swing.JFrame {
         }
     }//GEN-LAST:event_botonQuitarPActionPerformed
 
-    private void botonSiguiente3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_botonSiguiente3ActionPerformed
-        //panel2.setVisible(false);
-        //panel1.setVisible(true);
-    }//GEN-LAST:event_botonSiguiente3ActionPerformed
+    private void botonGuardarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_botonGuardarActionPerformed
+        if(!textFieldNombreMapa.getText().isEmpty() && !textFieldNombreMapa.getText().equals(" ")){
+            if(listaJugadores.size()!=0 && listaPlanetasNeutrales.size()!=0 && listaPlanetas.size()!=0){
+                generadorArchivoMapa.generar(setMapa(), listaPlanetas, listaPlanetasNeutrales, listaJugadores);
+                System.out.println(generadorArchivoMapa.getTexto());
+                escribirArchivo(generadorArchivoMapa.getTexto());
+            }else{
+                JOptionPane.showMessageDialog(null, "Una de las tablas es vacia");
+            }
+        }else{
+            JOptionPane.showMessageDialog(null, "El nombre del Mapa no es correcto");
+        }
+        
+        
+        
+        
+        
+    }//GEN-LAST:event_botonGuardarActionPerformed
 
     private void botonQuitarPJugadorActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_botonQuitarPJugadorActionPerformed
         if(seleccion4 && seleccion3){
@@ -647,11 +696,11 @@ public class VentanaNuevoMapa extends javax.swing.JFrame {
         
     }//GEN-LAST:event_tablaPlanetasJugadorMouseClicked
 
-    private void botonCancelar1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_botonCancelar1ActionPerformed
+    private void botonCancelarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_botonCancelarActionPerformed
         this.setVisible(false);
         limpiar();
         ventanaJugar.setVisible(true);
-    }//GEN-LAST:event_botonCancelar1ActionPerformed
+    }//GEN-LAST:event_botonCancelarActionPerformed
 
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
@@ -659,12 +708,12 @@ public class VentanaNuevoMapa extends javax.swing.JFrame {
     private javax.swing.JButton botonAniadirP;
     private javax.swing.JButton botonAniadirPJugador;
     private javax.swing.JButton botonAniadirPN;
-    private javax.swing.JButton botonCancelar1;
+    private javax.swing.JButton botonCancelar;
+    private javax.swing.JButton botonGuardar;
     private javax.swing.JButton botonQuitarJugador;
     private javax.swing.JButton botonQuitarP;
     private javax.swing.JButton botonQuitarPJugador;
     private javax.swing.JButton botonQuitarPN;
-    private javax.swing.JButton botonSiguiente3;
     private javax.swing.JCheckBox checkBoxAcumular;
     private javax.swing.JCheckBox checkBoxAlAzar;
     private javax.swing.JCheckBox checkBoxMapaCiego;

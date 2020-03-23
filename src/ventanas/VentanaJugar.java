@@ -4,8 +4,14 @@ package ventanas;
 import analizadores.AnalizadorLexico;
 import analizadores.AnalizadorSintactico;
 import archivos.Archivo;
+import game.Accion;
+import game.ActualizacionPlanetas;
+import game.GeneradorAcciones;
 import game.GeneradorAleatorioPlanetasN;
+import game.GeneradorIconos;
+import game.Medicion;
 import game.Tablero;
+import java.awt.Color;
 import java.awt.GridLayout;
 import java.awt.Image;
 import java.io.File;
@@ -17,7 +23,9 @@ import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JFileChooser;
 import javax.swing.JOptionPane;
+import objetos.Flota;
 import objetos.Juego;
+import objetos.Planeta;
 
 public class VentanaJugar extends javax.swing.JFrame {
 
@@ -28,6 +36,16 @@ public class VentanaJugar extends javax.swing.JFrame {
     JButton tableroBotones [][];
     VentanaNuevoMapa ventanaNuevoMapa = new VentanaNuevoMapa(this);
     String pathMapa;
+    GeneradorIconos generadorIconos = new GeneradorIconos();
+    GeneradorAcciones generadorAcciones = new GeneradorAcciones();
+    ActualizacionPlanetas actualizacionPlanetas = new ActualizacionPlanetas();
+    VentanaEnviarFlota ventanaEnviarFlota = new VentanaEnviarFlota(this);
+    VentanaVerFlota ventanaVerFlota = new VentanaVerFlota(this);
+    Medicion medicion = new Medicion();
+    public Planeta planeta1;
+    public Planeta planeta2;
+    public int opcion;
+    public int turno, numeroTurno;
 
     public VentanaJugar() {
         initComponents();
@@ -41,43 +59,25 @@ public class VentanaJugar extends javax.swing.JFrame {
     public void iniciarMapa(){
         if(juego.getMapa().isAlAzar()){
             if(juego.getMapa().getNumeroCuadros()>=(juego.getMapa().getPlanetasNeutrales()+juego.getListaPlanetas().size())){
-                //pintar();
                 //Generar Nutrales aleatorios
                 juego.setListaPlanetasNeutrales(generadorAleatorio.generarNeutralesAleatorios(juego.getMapa().getPlanetasNeutrales(), juego.getMapa().isMostrarNavesNeutrales(), juego.getMapa().isMostrarEstadisticasNeutrales(), juego.getMapa().getProduccionNeutrales()));
+                juego = actualizacionPlanetas.actualizarPlanetas(juego);
                 pintar();
             }else{
                 JOptionPane.showMessageDialog(null, "EL NUMERO DE CASILLAS ES MENOR AL NUMERO DE PLANETAS");
             }
         }else{
             if(juego.getMapa().getNumeroCuadros()>=(juego.getListaPlanetasNeutrales().size()+juego.getListaPlanetas().size())){
+                juego = actualizacionPlanetas.actualizarPlanetas(juego);
                 pintar();
-            
-            
-            
-            
+
             }else{
                 JOptionPane.showMessageDialog(null, "EL NUMERO DE CASILLAS ES MENOR AL NUMERO DE PLANETAS");
             }
         }
-        
-        
     }
     
     public void pintar(){
-        System.out.println("MAPAPAPA");
-        juego.getMapa().pintar();
-        System.out.println("Lista planetas");
-        for (int i = 0; i < juego.getListaPlanetas().size(); i++) {
-            juego.getListaPlanetas().get(i).pintar();
-        }
-        System.out.println("Lista planetas neutrales");
-        for (int i = 0; i < juego.getListaPlanetasNeutrales().size(); i++) {
-            juego.getListaPlanetasNeutrales().get(i).pintar();
-        }
-        System.out.println("Lista Jugadores");
-        for (int i = 0; i < juego.getListaJugadores().size(); i++) {
-            juego.getListaJugadores().get(i).pintar();
-        }
         tablero.generarTablero(juego.getMapa().getTamanioX(), juego.getMapa().getTamanioY());
         tableroBotones = tablero.getTablero();
         
@@ -85,79 +85,116 @@ public class VentanaJugar extends javax.swing.JFrame {
         for (int i = 0; i < juego.getMapa().getTamanioX(); i++) {
             for (int j = 0; j < juego.getMapa().getTamanioY(); j++) {
                 //System.out.println(i+", "+j);
-                panel2.add(tableroBotones[i][j]);
-                
-                
+                panel2.add(tableroBotones[i][j]);  
             }
         }
-        generarIconos();
+        tableroBotones = generadorIconos.generarIconos(juego, tableroBotones);
+        tableroBotones = generadorAcciones.generarAciones(juego, tableroBotones, this);
         panel2.setLayout(new GridLayout(juego.getMapa().getTamanioX(),juego.getMapa().getTamanioY()));
         panel2.validate();
         panel2.repaint();
-        
+        opcion=0;
+        panelOpciones.setVisible(true);
+        panel1.setVisible(true);
+        panel3.setVisible(true);
+        iniciarDatos();
+        pintarDatosJugador();
+    }
+    public void setPlanetaSeleccionado(Planeta planeta){
+        Planeta aux = isTipoPlaneta(planeta.getPosicion(), planeta.getTipo());
+        if(opcion==0){
+            labelPlaneta1.setText(aux.getNombre());
+            panelOpciones.setVisible(true);
+            System.out.println("Funciona");
+        }else{
+            labelPlaneta2.setText(aux.getNombre());
+        }
+    }
+    private Planeta isTipoPlaneta(int posicion, int tipo){
+        if(tipo==1){
+            return juego.getListaPlanetas().get(posicion);
+        }
+        return juego.getListaPlanetasNeutrales().get(posicion);
+    }
+    public void medirDistancia(){
+        if(planeta1!=null && planeta2!=null){
+            Planeta aux1 = isTipoPlaneta(planeta1.getPosicion(), planeta1.getTipo());
+            Planeta aux2 = isTipoPlaneta(planeta2.getPosicion(), planeta2.getTipo());
+            JOptionPane.showMessageDialog(null,medicion.medirDistancia(aux1, aux2) );
+            
+        }
+    }
+    public void enviarFlota(){
+        if(planeta1!=null && planeta2!=null){
+            Planeta aux1 = isTipoPlaneta(planeta1.getPosicion(), planeta1.getTipo());
+            Planeta aux2 = isTipoPlaneta(planeta2.getPosicion(), planeta2.getTipo());
+            if(aux1.getJugador()==turno){
+                if(aux1.getJugador()!=aux2.getJugador()){
+                    System.out.println("Bien atacaste");
+                    atacar(aux1, aux2);
+
+                }else if(planeta1.getTipo()==1 && planeta2.getTipo()==0){
+                    System.out.println("Bien atacaste");
+                    atacar(aux1, aux2);
+                }else{
+                    JOptionPane.showMessageDialog(null, "Los planetas seleccionados le pertenecen a el mismo jugador");
+                } 
+            }else{
+                JOptionPane.showMessageDialog(null, "El Primer planeta \nNo pertenece al jugador en turno");
+            }
+            
+        }
+    }
+    public void atacar(Planeta aux1, Planeta aux2){
+        Flota flota = new Flota(aux1.getPosicion(), aux2.getPosicion(), aux1.getNombre(), aux2.getNombre(), aux1.getPorcentajeMuertes(),aux2.getTipo());
+                flota.setTurno(medicion.medirDistancia(aux1, aux2));
+                flota.setPorcetajeMuertes(aux1.getPorcentajeMuertes());
+                ventanaEnviarFlota.setFlotaAux(flota);
+                ventanaEnviarFlota.setLabelCantidad(aux1.getNaves()-aux1.getNavesEnviadas());
+                ventanaEnviarFlota.actualizarNaves(aux1.getNaves(), aux1.getNavesEnviadas());
+                ventanaEnviarFlota.setDatos();
+                ventanaEnviarFlota.setVisible(true);
+                this.setEnabled(false);
+                
+                
     }
     
-    public void generarIconos(){
-        int x;
-        int y;
-        for(int i =0; i<juego.getListaPlanetasNeutrales().size();i++){
-            boolean vacio = true;
-            do {
-                x = (int) (Math.random()*juego.getMapa().getTamanioX());
-                y = (int) (Math.random()*juego.getMapa().getTamanioY());
-                System.out.println("coordenada: "+x+", "+y);
-                if(tableroBotones[x][y].getIcon()==null){
-                    tableroBotones[x][y].setIcon(tablero.getIcono(tableroBotones[x][y].getWidth(),tableroBotones[x][y].getHeight()));
-                    juego.getListaPlanetasNeutrales().get(i).setCoordenadas(x, y);
-                    String texto = "<html><b>Nombre: </b>"+juego.getListaPlanetasNeutrales().get(i).getNombre()+"<br>";
-                    if(juego.getMapa().isMostrarNavesNeutrales()){
-                        texto += "<b>Naves: </b>"+juego.getListaPlanetasNeutrales().get(i).getNaves()+"<br>";
-                    }
-                    
-                    if(juego.getMapa().isMostrarEstadisticasNeutrales()){
-                        texto += "<b>Produccion: </b>"+juego.getListaPlanetasNeutrales().get(i).getProduccion()+"<br>";
-                        texto += "<b>Porcentaje: </b>"+juego.getListaPlanetasNeutrales().get(i).getPorcentajeMuertes()+"<br>";
-                    }
-                    texto += "<html>";
-                    tableroBotones[x][y].setToolTipText(texto);
-                    vacio = false;
-                }
-            } while (vacio);
-        }
-        
-        for(int i =0; i<juego.getListaPlanetas().size();i++){
-            boolean vacio = true;
-            do {
-                x = (int) (Math.random()*juego.getMapa().getTamanioX());
-                y = (int) (Math.random()*juego.getMapa().getTamanioY());
-                System.out.println("coordenada2222: "+x+", "+y);
-                if(tableroBotones[x][y].getIcon()==null){
-                    tableroBotones[x][y].setIcon(tablero.getIcono(tableroBotones[x][y].getWidth(),tableroBotones[x][y].getHeight()));
-                    juego.getListaPlanetas().get(i).setCoordenadas(x, y);
-                    String texto = "<html><b>Nombre: </b>"+juego.getListaPlanetas().get(i).getNombre()+"<br>";
-                    if(!juego.getMapa().isMapaCiego()){
-                        
-                        texto += "<b>Naves: </b>"+juego.getListaPlanetas().get(i).getNaves()+"<br>";
-                        texto += "<b>Produccion: </b>"+juego.getListaPlanetas().get(i).getProduccion()+"<br>";
-                        texto += "<b>Porcentaje: </b>"+juego.getListaPlanetas().get(i).getPorcentajeMuertes()+"<br>";
-                        texto += "<html>";
-                        tableroBotones[x][y].setToolTipText(texto);
-                    }
-                    
-                    vacio = false;
-                }
-            } while (vacio);
-        }
+    public void agregarFlota(Flota flotaA){
+        flotaA.setNumero( juego.getListaJugadores().get(turno).getListaFlota().size()+1);
+        juego.getListaJugadores().get(turno).agregarFlora(flotaA);
+        int navesA = juego.getListaPlanetas().get(planeta1.getPosicion()).getNavesEnviadas();
+        juego.getListaPlanetas().get(planeta1.getPosicion()).setNavesEnviadas(navesA+flotaA.getNavesEnviadas());
+        //juego.getListaJugadores().get(planeta1.getJugador()).agregarFlora(flotaA);
+        planeta1=null;
+        planeta2=null;
+        labelPlaneta1.setText("");
+        labelPlaneta2.setText("");
+        this.setEnabled(true);
     }
+    public void iniciarDatos(){
+        turno=0;
+        numeroTurno=1;
+    }
+    public void pintarDatosJugador(){
+        labelJug.setText(juego.getListaJugadores().get(turno).getNombre());
+        labelTun.setText(numeroTurno+"");
+    }
+    
 
     @SuppressWarnings("unchecked")
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
         panel1 = new javax.swing.JPanel();
-        jButton1 = new javax.swing.JButton();
+        botonConsultarFlota = new javax.swing.JButton();
+        labelJugador = new javax.swing.JLabel();
+        labelTurno = new javax.swing.JLabel();
+        labelJug = new javax.swing.JLabel();
+        labelTun = new javax.swing.JLabel();
         panel2 = new javax.swing.JPanel();
         panel3 = new javax.swing.JPanel();
+        jScrollPane1 = new javax.swing.JScrollPane();
+        textoAreaMensajes = new javax.swing.JTextArea();
         labelFondo = new javax.swing.JLabel();
         panelOpciones = new javax.swing.JPanel();
         botonEnviarNaves = new javax.swing.JButton();
@@ -180,12 +217,32 @@ public class VentanaJugar extends javax.swing.JFrame {
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         getContentPane().setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
+        panel1.setBackground(new java.awt.Color(0, 0, 0));
         panel1.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
-        jButton1.setText("Consultar Flota");
-        panel1.add(jButton1, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 10, -1, -1));
+        botonConsultarFlota.setText("Consultar Flota");
+        botonConsultarFlota.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                botonConsultarFlotaActionPerformed(evt);
+            }
+        });
+        panel1.add(botonConsultarFlota, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 10, -1, -1));
 
-        getContentPane().add(panel1, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 0, 260, 60));
+        labelJugador.setForeground(new java.awt.Color(204, 0, 0));
+        labelJugador.setText("Jugador:");
+        panel1.add(labelJugador, new org.netbeans.lib.awtextra.AbsoluteConstraints(160, 10, -1, -1));
+
+        labelTurno.setForeground(new java.awt.Color(204, 0, 0));
+        labelTurno.setText("Turno:");
+        panel1.add(labelTurno, new org.netbeans.lib.awtextra.AbsoluteConstraints(170, 30, -1, -1));
+
+        labelJug.setForeground(new java.awt.Color(255, 255, 0));
+        panel1.add(labelJug, new org.netbeans.lib.awtextra.AbsoluteConstraints(220, 10, 100, 20));
+
+        labelTun.setForeground(new java.awt.Color(0, 204, 0));
+        panel1.add(labelTun, new org.netbeans.lib.awtextra.AbsoluteConstraints(220, 30, 90, 20));
+
+        getContentPane().add(panel1, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 0, 360, 60));
 
         javax.swing.GroupLayout panel2Layout = new javax.swing.GroupLayout(panel2);
         panel2.setLayout(panel2Layout);
@@ -201,23 +258,49 @@ public class VentanaJugar extends javax.swing.JFrame {
         getContentPane().add(panel2, new org.netbeans.lib.awtextra.AbsoluteConstraints(150, 70, 710, 590));
 
         panel3.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
+
+        textoAreaMensajes.setBackground(new java.awt.Color(0, 0, 0));
+        textoAreaMensajes.setColumns(20);
+        textoAreaMensajes.setFont(new java.awt.Font("Dialog", 0, 14)); // NOI18N
+        textoAreaMensajes.setForeground(new java.awt.Color(255, 0, 0));
+        textoAreaMensajes.setRows(5);
+        jScrollPane1.setViewportView(textoAreaMensajes);
+
+        panel3.add(jScrollPane1, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 0, 1010, 110));
+
         getContentPane().add(panel3, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 670, 1010, 110));
         getContentPane().add(labelFondo, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 66, 1010, 600));
 
+        panelOpciones.setBackground(new java.awt.Color(0, 0, 0));
+
         botonEnviarNaves.setText("Enviar Naves");
+        botonEnviarNaves.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                botonEnviarNavesActionPerformed(evt);
+            }
+        });
 
         botonMedirDistancia.setText("Medir Distancia");
+        botonMedirDistancia.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                botonMedirDistanciaActionPerformed(evt);
+            }
+        });
 
         botonFinTurno.setText("Fin Turno");
+        botonFinTurno.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                botonFinTurnoActionPerformed(evt);
+            }
+        });
 
         labelPlaneta1.setFont(new java.awt.Font("Dialog", 3, 18)); // NOI18N
         labelPlaneta1.setForeground(new java.awt.Color(255, 0, 51));
-        labelPlaneta1.setText("PLAN1");
 
         labelPlaneta2.setFont(new java.awt.Font("Dialog", 3, 18)); // NOI18N
         labelPlaneta2.setForeground(new java.awt.Color(0, 0, 255));
-        labelPlaneta2.setText("PLAN2");
 
+        labelFlecha.setForeground(new java.awt.Color(255, 255, 255));
         labelFlecha.setText("==========>");
 
         javax.swing.GroupLayout panelOpcionesLayout = new javax.swing.GroupLayout(panelOpciones);
@@ -225,13 +308,13 @@ public class VentanaJugar extends javax.swing.JFrame {
         panelOpcionesLayout.setHorizontalGroup(
             panelOpcionesLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, panelOpcionesLayout.createSequentialGroup()
-                .addGap(29, 29, 29)
-                .addComponent(labelPlaneta1, javax.swing.GroupLayout.PREFERRED_SIZE, 68, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap(14, Short.MAX_VALUE)
+                .addComponent(labelPlaneta1, javax.swing.GroupLayout.PREFERRED_SIZE, 76, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(labelFlecha, javax.swing.GroupLayout.PREFERRED_SIZE, 82, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addComponent(labelPlaneta2, javax.swing.GroupLayout.PREFERRED_SIZE, 70, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 128, Short.MAX_VALUE)
+                .addGap(45, 45, 45)
                 .addComponent(botonMedirDistancia)
                 .addGap(18, 18, 18)
                 .addComponent(botonEnviarNaves)
@@ -250,10 +333,10 @@ public class VentanaJugar extends javax.swing.JFrame {
                     .addComponent(labelPlaneta1, javax.swing.GroupLayout.PREFERRED_SIZE, 32, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(labelPlaneta2, javax.swing.GroupLayout.PREFERRED_SIZE, 32, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(labelFlecha))
-                .addContainerGap(20, Short.MAX_VALUE))
+                .addContainerGap(22, Short.MAX_VALUE))
         );
 
-        getContentPane().add(panelOpciones, new org.netbeans.lib.awtextra.AbsoluteConstraints(270, 0, 740, 60));
+        getContentPane().add(panelOpciones, new org.netbeans.lib.awtextra.AbsoluteConstraints(360, 0, 650, 60));
 
         menuJugar.setText("Jugar");
         menuJugar.addMouseListener(new java.awt.event.MouseAdapter() {
@@ -357,15 +440,45 @@ public class VentanaJugar extends javax.swing.JFrame {
         this.setVisible(false);
     }//GEN-LAST:event_menuItemNuevoJuegoActionPerformed
 
+    private void botonMedirDistanciaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_botonMedirDistanciaActionPerformed
+        medirDistancia();
+    }//GEN-LAST:event_botonMedirDistanciaActionPerformed
+
+    private void botonEnviarNavesActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_botonEnviarNavesActionPerformed
+        enviarFlota();
+    }//GEN-LAST:event_botonEnviarNavesActionPerformed
+
+    private void botonFinTurnoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_botonFinTurnoActionPerformed
+        if(turno==(juego.getListaJugadores().size()-1)){
+            turno=0;
+            numeroTurno++;
+        }else{
+            turno++;
+        }
+        pintarDatosJugador();
+    }//GEN-LAST:event_botonFinTurnoActionPerformed
+
+    private void botonConsultarFlotaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_botonConsultarFlotaActionPerformed
+        ventanaVerFlota.limpiar();
+        System.out.println("Tamnio flota"+juego.getListaJugadores().get(turno).getListaFlota().size());
+        ventanaVerFlota.pintar(juego.getListaJugadores().get(turno).getListaFlota());
+        ventanaVerFlota.setVisible(true);
+    }//GEN-LAST:event_botonConsultarFlotaActionPerformed
+
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JButton botonConsultarFlota;
     private javax.swing.JButton botonEnviarNaves;
     private javax.swing.JButton botonFinTurno;
     private javax.swing.JButton botonMedirDistancia;
-    private javax.swing.JButton jButton1;
+    private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JLabel labelFlecha;
     private javax.swing.JLabel labelFondo;
+    private javax.swing.JLabel labelJug;
+    private javax.swing.JLabel labelJugador;
     private javax.swing.JLabel labelPlaneta1;
     private javax.swing.JLabel labelPlaneta2;
+    private javax.swing.JLabel labelTun;
+    private javax.swing.JLabel labelTurno;
     private javax.swing.JMenuBar menuBar;
     private javax.swing.JMenu menuEditar;
     private javax.swing.JMenuItem menuItemCargarPartida;
@@ -380,5 +493,6 @@ public class VentanaJugar extends javax.swing.JFrame {
     private javax.swing.JPanel panel2;
     public javax.swing.JPanel panel3;
     public javax.swing.JPanel panelOpciones;
+    private javax.swing.JTextArea textoAreaMensajes;
     // End of variables declaration//GEN-END:variables
 }

@@ -38,7 +38,7 @@ public class ManejadorPlanetas {
     }
     
     public boolean isProduccion(Planeta p){
-        if(p.getProduccion()!=0){
+        if(p.isIsProduccion()){
             return true;
         }
         return false;

@@ -6,14 +6,28 @@ import java.util.ArrayList;
 public class Jugador {
         
     private String nombre;
-    private int tipo;
+    private int tipo, turnos;
     private ArrayList<Planeta> planetas = new ArrayList<>();
     private ArrayList<String> listaPlanetas = new ArrayList<>();
+    private ArrayList<Flota> listaFlota = new ArrayList<>();
 
     public Jugador(){
         nombre=null;
     }
-    
+
+    public ArrayList<Flota> getListaFlota() {
+        return listaFlota;
+    }
+
+    public void setListaFlota(ArrayList<Flota> listaFlota) {
+        this.listaFlota = listaFlota;
+    }
+    public void agregarFlora(Flota flota){
+        listaFlota.add(flota);
+    }
+    public void quitarFlota(int index){
+        listaFlota.remove(index);
+    }
     public String getNombre() {
         return nombre;
     }
@@ -55,6 +69,16 @@ public class Jugador {
 
     public void setListaPlanetas(ArrayList<String> listaPlanetas) {
         this.listaPlanetas = listaPlanetas;
+    }
+
+    public int getTurnos() {
+        return turnos;
+    }
+    public void sumarTurno(){
+        turnos++;
+    }
+    public void setTurnos(int turnos) {
+        this.turnos = turnos;
     }
     
     

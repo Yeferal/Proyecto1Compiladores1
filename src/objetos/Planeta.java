@@ -6,7 +6,7 @@ public class Planeta {
     private String nombre;
     private int naves, produccion, jugador, coordenadaX, coordenadaY;
     private double porcentajeMuertes;
-    private int tipo;
+    private int tipo, posicion, navesEnviadas;
     private boolean isProduccion, tieneJugador;
 
     public Planeta(){
@@ -14,6 +14,15 @@ public class Planeta {
         nombre = null;
         isProduccion = false;
         tieneJugador = false;
+        navesEnviadas=0;
+    }
+
+    public int getPosicion() {
+        return posicion;
+    }
+
+    public void setPosicion(int posicion) {
+        this.posicion = posicion;
     }
     
     public String getNombre() {
@@ -88,6 +97,14 @@ public class Planeta {
 
     public void setTieneJugador(boolean tieneJugador) {
         this.tieneJugador = tieneJugador;
+    }
+
+    public int getNavesEnviadas() {
+        return navesEnviadas;
+    }
+
+    public void setNavesEnviadas(int navesEnviadas) {
+        this.navesEnviadas = navesEnviadas;
     }
     
     

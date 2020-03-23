@@ -1,0 +1,71 @@
+
+package game;
+
+import javax.swing.JButton;
+import objetos.Juego;
+
+public class GeneradorIconos {
+    
+    Tablero tablero = new Tablero();
+    
+    public JButton [][] generarIconos(Juego juego, JButton [][] tableroBotones){
+        int x;
+        int y;
+        //recirre los planetas neutrales
+        for(int i =0; i<juego.getListaPlanetasNeutrales().size();i++){
+            boolean vacio = true;
+            do {
+                x = (int) (Math.random()*juego.getMapa().getTamanioX());
+                y = (int) (Math.random()*juego.getMapa().getTamanioY());
+                
+                if(tableroBotones[x][y].getIcon()==null){
+                    System.out.println("coordenada: "+x+", "+y);
+                    tableroBotones[x][y].setIcon(tablero.getIcono(tableroBotones[x][y].getWidth(),tableroBotones[x][y].getHeight()));
+                    juego.getListaPlanetasNeutrales().get(i).setCoordenadas(x, y);
+                    juego.getListaPlanetasNeutrales().get(i).setPosicion(i);
+                    String texto = "<html><b>Nombre: </b>"+juego.getListaPlanetasNeutrales().get(i).getNombre()+"<br>";
+                    if(juego.getMapa().isMostrarNavesNeutrales()){
+                        texto += "<b>Naves: </b>"+juego.getListaPlanetasNeutrales().get(i).getNaves()+"<br>";
+                    }
+                    
+                    if(juego.getMapa().isMostrarEstadisticasNeutrales()){
+                        texto += "<b>Produccion: </b>"+juego.getListaPlanetasNeutrales().get(i).getProduccion()+"<br>";
+                        texto += "<b>Porcentaje: </b>"+juego.getListaPlanetasNeutrales().get(i).getPorcentajeMuertes()+"<br>";
+                    }
+                    texto += "<html>";
+                    tableroBotones[x][y].setToolTipText(texto);
+                    vacio = false;
+                }
+            } while (vacio);
+        }
+        //recorre los planetas de jugador
+        for(int i =0; i<juego.getListaPlanetas().size();i++){
+            boolean vacio = true;
+            do {
+                x = (int) (Math.random()*juego.getMapa().getTamanioX());
+                y = (int) (Math.random()*juego.getMapa().getTamanioY());
+                
+                if(tableroBotones[x][y].getIcon()==null){
+                    System.out.println("coordenada2222: "+x+", "+y);
+                    tableroBotones[x][y].setIcon(tablero.getIcono(tableroBotones[x][y].getWidth(),tableroBotones[x][y].getHeight()));
+                    //tableroBotones[x][y].setBackground(new Color(i, i, i));
+                    juego.getListaPlanetas().get(i).setCoordenadas(x, y);
+                    juego.getListaPlanetas().get(i).setPosicion(i);
+                    tableroBotones[x][y].setText("<html><b>N :</b>"+juego.getListaPlanetas().get(i).getNombre()+"<br>"+"<b>J: </b>"+juego.getListaJugadores().get(juego.getListaPlanetas().get(i).getJugador()).getNombre()+"<html>");
+                    String texto = "<html><b>Nombre: </b>"+juego.getListaPlanetas().get(i).getNombre()+"<br>";
+                    if(!juego.getMapa().isMapaCiego()){
+                        
+                        texto += "<b>Naves: </b>"+juego.getListaPlanetas().get(i).getNaves()+"<br>";
+                        texto += "<b>Produccion: </b>"+juego.getListaPlanetas().get(i).getProduccion()+"<br>";
+                        texto += "<b>Porcentaje: </b>"+juego.getListaPlanetas().get(i).getPorcentajeMuertes()+"<br>";
+                        texto += "<html>";
+                        tableroBotones[x][y].setToolTipText(texto);
+                    }
+                    
+                    vacio = false;
+                }
+            } while (vacio);
+        }
+        return tableroBotones;
+    }
+}
