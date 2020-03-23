@@ -1,6 +1,7 @@
 
 package game;
 
+import java.awt.Font;
 import javax.swing.JButton;
 import objetos.Juego;
 
@@ -52,7 +53,8 @@ public class GeneradorIconos {
                     juego.getListaPlanetas().get(i).setCoordenadas(x, y);
                     juego.getListaPlanetas().get(i).setPosicion(i);
                     tableroBotones[x][y].setText("<html><b>N :</b>"+juego.getListaPlanetas().get(i).getNombre()+"<br>"+"<b>J: </b>"+juego.getListaJugadores().get(juego.getListaPlanetas().get(i).getJugador()).getNombre()+"<html>");
-                    String texto = "<html><b>Nombre: </b>"+juego.getListaPlanetas().get(i).getNombre()+"<br>";
+                    //tableroBotones[x][y].setFont(new Font("Dialog", 2, 5));
+                    String texto = "<html><b>J: </b>"+juego.getListaJugadores().get(juego.getListaPlanetas().get(i).getJugador()).getNombre()+"<br><b>Nombre: </b>"+juego.getListaPlanetas().get(i).getNombre()+"<br>";
                     if(!juego.getMapa().isMapaCiego()){
                         
                         texto += "<b>Naves: </b>"+juego.getListaPlanetas().get(i).getNaves()+"<br>";

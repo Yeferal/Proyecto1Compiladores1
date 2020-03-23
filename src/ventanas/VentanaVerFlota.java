@@ -36,6 +36,11 @@ public class VentanaVerFlota extends javax.swing.JFrame {
         labelEnvio.setVisible(false);
         labelFlota.setVisible(false);
     }
+    
+    public void quitarFlota(int n){
+        ventanaJugar.juego.getListaJugadores().get(ventanaJugar.turno).eliminarFlota(n);
+        pintar(ventanaJugar.juego.getListaJugadores().get(ventanaJugar.turno).getListaFlota());
+    }
     public void pintar(ArrayList<Flota> f){
         ArrayList<Flota> lista = f;
         DefaultTableModel modeloNeutrales = new DefaultTableModel(){
@@ -52,10 +57,11 @@ public class VentanaVerFlota extends javax.swing.JFrame {
             modeloNeutrales.addColumn("Naves");
             modeloNeutrales.addColumn("% muertes");
             modeloNeutrales.addColumn("Turno de llegada");
+            modeloNeutrales.addColumn("LLEGO");
             //modeloNeutrales.addColumn("Destino");
         
             tabla.setModel(modeloNeutrales);
-            String datos[]= new String[6];
+            String datos[]= new String[7];
             
             
             for (int i = 0; i < lista.size(); i++) {
@@ -65,6 +71,11 @@ public class VentanaVerFlota extends javax.swing.JFrame {
                 datos[3] = lista.get(i).getNavesEnviadas()+"";
                 datos[4] = lista.get(i).getPorcetajeMuertes()+"";
                 datos[5] = lista.get(i).getTurnosLlegar()+"";
+                if(lista.get(i).isAtacado()){
+                    datos[6] = "SI";
+                }else{
+                    datos[6] = "EN CAMINO";
+                }
                 modeloNeutrales.addRow(datos);
             }
     }
@@ -100,8 +111,18 @@ public class VentanaVerFlota extends javax.swing.JFrame {
         jScrollPane1.setViewportView(tabla);
 
         botonCancelarEnvio.setText("Cancelar Envio");
+        botonCancelarEnvio.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                botonCancelarEnvioActionPerformed(evt);
+            }
+        });
 
         botonCerrar.setText("Cerrar");
+        botonCerrar.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                botonCerrarActionPerformed(evt);
+            }
+        });
 
         labelFlota.setText("No. Envio");
 
@@ -116,21 +137,18 @@ public class VentanaVerFlota extends javax.swing.JFrame {
                     .addGroup(panelLayout.createSequentialGroup()
                         .addGroup(panelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addGroup(panelLayout.createSequentialGroup()
-                                .addGap(32, 32, 32)
-                                .addComponent(labelEnvio, javax.swing.GroupLayout.PREFERRED_SIZE, 79, javax.swing.GroupLayout.PREFERRED_SIZE))
-                            .addGroup(panelLayout.createSequentialGroup()
                                 .addGap(18, 18, 18)
-                                .addComponent(botonCancelarEnvio)))
-                        .addContainerGap(11, Short.MAX_VALUE))
+                                .addComponent(botonCancelarEnvio))
+                            .addGroup(panelLayout.createSequentialGroup()
+                                .addGap(32, 32, 32)
+                                .addGroup(panelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                                    .addComponent(labelFlota, javax.swing.GroupLayout.PREFERRED_SIZE, 53, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                    .addComponent(labelEnvio, javax.swing.GroupLayout.PREFERRED_SIZE, 79, javax.swing.GroupLayout.PREFERRED_SIZE))))
+                        .addContainerGap(31, Short.MAX_VALUE))
                     .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, panelLayout.createSequentialGroup()
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addGroup(panelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, panelLayout.createSequentialGroup()
-                                .addComponent(botonCerrar)
-                                .addContainerGap())
-                            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, panelLayout.createSequentialGroup()
-                                .addComponent(labelFlota, javax.swing.GroupLayout.PREFERRED_SIZE, 53, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addGap(43, 43, 43))))))
+                        .addComponent(botonCerrar)
+                        .addGap(19, 19, 19))))
         );
         panelLayout.setVerticalGroup(
             panelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -151,15 +169,32 @@ public class VentanaVerFlota extends javax.swing.JFrame {
                 .addGap(27, 27, 27))
         );
 
-        getContentPane().add(panel, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 0, 840, 410));
+        getContentPane().add(panel, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 0, 860, 410));
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
     private void tablaMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_tablaMouseClicked
         int fila = tabla.getSelectedRow();
-        
+        seleccionN=fila;
+        seleccion=true;
+        labelEnvio.setText((fila+1)+"");
+        labelEnvio.setVisible(true);
+        labelFlota.setVisible(true);
+        botonCancelarEnvio.setVisible(true);
     }//GEN-LAST:event_tablaMouseClicked
+
+    private void botonCerrarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_botonCerrarActionPerformed
+        limpiar();
+        this.dispose();
+    }//GEN-LAST:event_botonCerrarActionPerformed
+
+    private void botonCancelarEnvioActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_botonCancelarEnvioActionPerformed
+        if(seleccion){
+            quitarFlota(seleccionN);
+            limpiar();
+        }
+    }//GEN-LAST:event_botonCancelarEnvioActionPerformed
 
 
     // Variables declaration - do not modify//GEN-BEGIN:variables

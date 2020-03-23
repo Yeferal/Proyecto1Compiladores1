@@ -39,7 +39,9 @@ public class Tablero {
      public Icon getIcono(int tamanioX, int tamanioY){
          Icon icono = null;
          ImageIcon iconoImage = new ImageIcon(definirRutaPlaneta());
-         icono = new ImageIcon(iconoImage.getImage().getScaledInstance(tamanioX-50,tamanioY-50 , Image.SCALE_SMOOTH));
+         tamanioX=(int)(tamanioX*0.30);
+         tamanioY=(int)(tamanioY*0.30);
+         icono = new ImageIcon(iconoImage.getImage().getScaledInstance(tamanioX,tamanioY , Image.SCALE_SMOOTH));
          return icono;
      }
      

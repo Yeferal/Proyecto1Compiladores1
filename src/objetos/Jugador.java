@@ -25,6 +25,15 @@ public class Jugador {
     public void agregarFlora(Flota flota){
         listaFlota.add(flota);
     }
+    public void eliminarFlota(int posicion){
+        listaFlota.remove(posicion);
+        actualizarPosicionesFlota();
+    }
+    public void actualizarPosicionesFlota(){
+        for (int i = 0; i < listaFlota.size(); i++) {
+            listaFlota.get(i).setNumero(i+1);
+        }
+    }
     public void quitarFlota(int index){
         listaFlota.remove(index);
     }

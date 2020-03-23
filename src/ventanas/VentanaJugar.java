@@ -6,6 +6,7 @@ import analizadores.AnalizadorSintactico;
 import archivos.Archivo;
 import game.Accion;
 import game.ActualizacionPlanetas;
+import game.Ataques;
 import game.GeneradorAcciones;
 import game.GeneradorAleatorioPlanetasN;
 import game.GeneradorIconos;
@@ -14,8 +15,10 @@ import game.Tablero;
 import java.awt.Color;
 import java.awt.GridLayout;
 import java.awt.Image;
+import java.awt.event.ActionListener;
 import java.io.File;
 import java.io.StringReader;
+import java.util.ArrayList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.Icon;
@@ -25,6 +28,7 @@ import javax.swing.JFileChooser;
 import javax.swing.JOptionPane;
 import objetos.Flota;
 import objetos.Juego;
+import objetos.Mensaje;
 import objetos.Planeta;
 
 public class VentanaJugar extends javax.swing.JFrame {
@@ -42,6 +46,8 @@ public class VentanaJugar extends javax.swing.JFrame {
     VentanaEnviarFlota ventanaEnviarFlota = new VentanaEnviarFlota(this);
     VentanaVerFlota ventanaVerFlota = new VentanaVerFlota(this);
     Medicion medicion = new Medicion();
+    Ataques ataques = new Ataques(this);
+    ArrayList<Mensaje> listaMensajes = new ArrayList<>();
     public Planeta planeta1;
     public Planeta planeta2;
     public int opcion;
@@ -129,7 +135,7 @@ public class VentanaJugar extends javax.swing.JFrame {
             Planeta aux1 = isTipoPlaneta(planeta1.getPosicion(), planeta1.getTipo());
             Planeta aux2 = isTipoPlaneta(planeta2.getPosicion(), planeta2.getTipo());
             if(aux1.getJugador()==turno){
-                if(aux1.getJugador()!=aux2.getJugador()){
+                if(planeta1.getTipo()==1 && aux1.getJugador()!=aux2.getJugador()){
                     System.out.println("Bien atacaste");
                     atacar(aux1, aux2);
 
@@ -174,12 +180,28 @@ public class VentanaJugar extends javax.swing.JFrame {
     public void iniciarDatos(){
         turno=0;
         numeroTurno=1;
+        textoAreaMensajes.setText("TURNO: "+numeroTurno+"");
     }
     public void pintarDatosJugador(){
         labelJug.setText(juego.getListaJugadores().get(turno).getNombre());
         labelTun.setText(numeroTurno+"");
     }
+    public void agregarMensaje(Mensaje mensaje){
+        listaMensajes.add(mensaje);
+        textoAreaMensajes.setText(textoAreaMensajes.getText()+"\n"+mensaje.toString());
+    }
     
+    public void actualizarBoton(int x,int y,Planeta p){
+        quitarAccionBoton(x, y);
+        Accion ac = new Accion(this, p);
+        tableroBotones[x][y].addActionListener(ac);
+        
+    }
+    public void quitarAccionBoton(int x,int y){
+        for (ActionListener al : tableroBotones[x][y].getActionListeners()) {
+            tableroBotones[x][y].removeActionListener(al);
+        }
+    }
 
     @SuppressWarnings("unchecked")
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
@@ -266,9 +288,9 @@ public class VentanaJugar extends javax.swing.JFrame {
         textoAreaMensajes.setRows(5);
         jScrollPane1.setViewportView(textoAreaMensajes);
 
-        panel3.add(jScrollPane1, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 0, 1010, 110));
+        panel3.add(jScrollPane1, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 0, 1010, 160));
 
-        getContentPane().add(panel3, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 670, 1010, 110));
+        getContentPane().add(panel3, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 670, 1010, 160));
         getContentPane().add(labelFondo, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 66, 1010, 600));
 
         panelOpciones.setBackground(new java.awt.Color(0, 0, 0));
@@ -449,12 +471,18 @@ public class VentanaJugar extends javax.swing.JFrame {
     }//GEN-LAST:event_botonEnviarNavesActionPerformed
 
     private void botonFinTurnoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_botonFinTurnoActionPerformed
+        ataques.verificarAtaques(juego, turno, numeroTurno);
         if(turno==(juego.getListaJugadores().size()-1)){
             turno=0;
+            
             numeroTurno++;
+            textoAreaMensajes.setText(textoAreaMensajes.getText()+"\n\nTURNO: "+numeroTurno+"");
+            //ataques.verificarAtaques(juego, turno, numeroTurno);
         }else{
             turno++;
+            //ataques.verificarAtaques(juego, turno, numeroTurno);
         }
+        
         pintarDatosJugador();
     }//GEN-LAST:event_botonFinTurnoActionPerformed
 
