@@ -4,13 +4,13 @@
     <open-files xmlns="http://www.netbeans.org/ns/projectui-open-files/2">
         <group>
             <file>file:/E:/LENOVO-PC/Documents/NetBeansProjects/Compi%201/Proyecto1Compiladores1/src/ventanas/VentanaJugar.java</file>
-            <file>file:/E:/LENOVO-PC/Documents/NetBeansProjects/Compi%201/Proyecto1Compiladores1/src/game/Tablero.java</file>
+            <file>file:/E:/LENOVO-PC/Documents/NetBeansProjects/Compi%201/Proyecto1Compiladores1/src/game/Ataques.java</file>
+            <file>file:/E:/LENOVO-PC/Documents/NetBeansProjects/Compi%201/Proyecto1Compiladores1/src/objetos/Mensaje.java</file>
+            <file>file:/E:/LENOVO-PC/Documents/NetBeansProjects/Compi%201/Proyecto1Compiladores1/src/objetos/Jugador.java</file>
             <file>file:/E:/LENOVO-PC/Documents/NetBeansProjects/Compi%201/Proyecto1Compiladores1/src/objetos/Mapa.java</file>
             <file>file:/E:/LENOVO-PC/Documents/NetBeansProjects/Compi%201/Proyecto1Compiladores1/src/game/Accion.java</file>
-            <file>file:/E:/LENOVO-PC/Documents/NetBeansProjects/Compi%201/Proyecto1Compiladores1/src/game/GeneradorAleatorioPlanetasN.java</file>
-            <file>file:/E:/LENOVO-PC/Documents/NetBeansProjects/Compi%201/Proyecto1Compiladores1/src/ventanas/VentanaNuevoMapa.java</file>
-            <file>file:/E:/LENOVO-PC/Documents/NetBeansProjects/Compi%201/Proyecto1Compiladores1/src/ventanas/VentanaInicio.java</file>
-            <file>file:/E:/LENOVO-PC/Documents/NetBeansProjects/Compi%201/Proyecto1Compiladores1/src/manejadores/ManejadorMapa.java</file>
+            <file>file:/E:/LENOVO-PC/Documents/NetBeansProjects/Compi%201/Proyecto1Compiladores1/src/objetos/Flota.java</file>
+            <file>file:/E:/LENOVO-PC/Documents/NetBeansProjects/Compi%201/Proyecto1Compiladores1/src/objetos/Planeta.java</file>
         </group>
     </open-files>
 </project-private>

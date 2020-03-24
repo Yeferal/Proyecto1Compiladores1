@@ -30,6 +30,7 @@ public class Ataques {
                 }
             }
         }
+        juego.getListaJugadores().get(turno).actualizarFlota();
         return juego;
     }
     
@@ -50,7 +51,7 @@ public class Ataques {
             if(batallar(flota, juego.getListaPlanetasNeutrales().get(flota.getDestino()))){
                 m = new Mensaje(juego.getListaPlanetasNeutrales().get(flota.getDestino()).getNombre(), juego.getListaJugadores().get(turno).getNombre(),true, turno);
                 cambiarPlaneta(juego, flota.getDestino(),turno, 0);
-                ventanaJugar.actualizarBoton(juego.getListaPlanetasNeutrales().get(flota.getDestino()).getCoordenadaX(), juego.getListaPlanetasNeutrales().get(flota.getDestino()).getCoordenadaY(), juego.getListaPlanetas().get(flota.getDestino()));
+                ventanaJugar.actualizarBoton(juego.getListaPlanetasNeutrales().get(flota.getDestino()).getCoordenadaX(), juego.getListaPlanetasNeutrales().get(flota.getDestino()).getCoordenadaY(), juego.getListaPlanetas().get(juego.getListaPlanetas().size()-1));
             }else{
                 m = new Mensaje(juego.getListaPlanetasNeutrales().get(flota.getDestino()).getNombre(), juego.getListaJugadores().get(turno).getNombre(),false, turno);
             }
@@ -65,6 +66,7 @@ public class Ataques {
         double cantidadAtaqueP2;
         cantidadAtaqueP1 = flota.getPorcetajeMuertes()*flota.getNavesEnviadas();
         cantidadAtaqueP2 = (p2.getNaves()-p2.getNavesEnviadas())*p2.getPorcentajeMuertes();
+        //int aleatorio = (int) (Math.random()*());
         if(cantidadAtaqueP1>cantidadAtaqueP2){
             return true;
         }
@@ -81,6 +83,11 @@ public class Ataques {
             juego.getListaPlanetas().get(numeroPlaneta).setJugador(jugador);
         }else{
             juego.getListaPlanetasNeutrales().get(numeroPlaneta).setJugador(jugador);
+            juego.getListaPlanetasNeutrales().get(numeroPlaneta).setTipo(1);
+            Planeta pl = juego.getListaPlanetasNeutrales().get(numeroPlaneta);
+            pl.setPosicion(juego.getListaPlanetas().size());
+            juego.getListaPlanetas().add(pl);
+            //juego.getListaPlanetasNeutrales().get(numeroPlaneta).setTipo(1);
         }
     }
     

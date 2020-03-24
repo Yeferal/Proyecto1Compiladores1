@@ -18,6 +18,15 @@ public class Jugador {
     public ArrayList<Flota> getListaFlota() {
         return listaFlota;
     }
+    public void actualizarFlota(){
+        ArrayList<Flota> listaFlotaAux = new ArrayList<>();
+        for (int i = 0; i < listaFlota.size(); i++) {
+            if(!listaFlota.get(i).isAtacado()){
+                listaFlotaAux.add(listaFlota.get(i));
+            }
+        }
+        listaFlota = listaFlotaAux;
+    }
 
     public void setListaFlota(ArrayList<Flota> listaFlota) {
         this.listaFlota = listaFlota;

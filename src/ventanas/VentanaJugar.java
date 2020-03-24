@@ -10,8 +10,10 @@ import game.Ataques;
 import game.GeneradorAcciones;
 import game.GeneradorAleatorioPlanetasN;
 import game.GeneradorIconos;
+import game.JugadorPC;
 import game.Medicion;
 import game.Tablero;
+import game.VerificadorPlaneta;
 import java.awt.Color;
 import java.awt.GridLayout;
 import java.awt.Image;
@@ -45,9 +47,11 @@ public class VentanaJugar extends javax.swing.JFrame {
     ActualizacionPlanetas actualizacionPlanetas = new ActualizacionPlanetas();
     VentanaEnviarFlota ventanaEnviarFlota = new VentanaEnviarFlota(this);
     VentanaVerFlota ventanaVerFlota = new VentanaVerFlota(this);
-    Medicion medicion = new Medicion();
+    public Medicion medicion = new Medicion();
     Ataques ataques = new Ataques(this);
     ArrayList<Mensaje> listaMensajes = new ArrayList<>();
+    VerificadorPlaneta verificadorPlaneta = new VerificadorPlaneta();
+    JugadorPC jpc = new JugadorPC(this);
     public Planeta planeta1;
     public Planeta planeta2;
     public int opcion;
@@ -59,7 +63,7 @@ public class VentanaJugar extends javax.swing.JFrame {
         panel2.setOpaque(false);
         ImageIcon fondo = new ImageIcon("src/planetas/u2.jpg");
         labelFondo.setIcon(new ImageIcon(fondo.getImage().getScaledInstance(labelFondo.getWidth(), labelFondo.getHeight(), Image.SCALE_SMOOTH)));
-        
+        //botonFinTurno.doClick();
     }
     
     public void iniciarMapa(){
@@ -192,15 +196,41 @@ public class VentanaJugar extends javax.swing.JFrame {
     }
     
     public void actualizarBoton(int x,int y,Planeta p){
+        p.toString();
         quitarAccionBoton(x, y);
         Accion ac = new Accion(this, p);
         tableroBotones[x][y].addActionListener(ac);
-        
+        cambiarTextoBoton(x, y, p);
     }
     public void quitarAccionBoton(int x,int y){
         for (ActionListener al : tableroBotones[x][y].getActionListeners()) {
             tableroBotones[x][y].removeActionListener(al);
         }
+    }
+    public void verificarGanador(){
+        if(verificadorPlaneta.verificarPlanetasNeutrales(juego) && verificadorPlaneta.verificarGanador(juego)){
+            JOptionPane.showMessageDialog(null, "Hay un Ganador");
+        }
+    }
+    public void cambiarTextoBoton(int x,int y,Planeta p){
+        tableroBotones[x][y].setText("<html><b>N :</b>"+p.getNombre()+"<br>"+"<b>J: </b>"+juego.getListaJugadores().get(p.getJugador()).getNombre()+"<html>");
+        String texto = "<html><b>J: </b>"+juego.getListaJugadores().get(p.getJugador()).getNombre()+"<br><b>Nombre: </b>"+p.getNombre()+"<br>";
+                    if(!juego.getMapa().isMapaCiego()){
+                        
+                        texto += "<b>Naves: </b>"+p.getNaves()+"<br>";
+                        texto += "<b>Produccion: </b>"+p.getProduccion()+"<br>";
+                        texto += "<b>Porcentaje: </b>"+p.getPorcentajeMuertes()+"<br>";
+                        texto += "<html>";
+                        tableroBotones[x][y].setToolTipText(texto);
+                    }
+    }
+    
+    public void bloquear(boolean opci){
+        botonConsultarFlota.setEnabled(opci);
+        botonEnviarNaves.setEnabled(opci);
+        botonFinTurno.setEnabled(opci);
+        botonMedirDistancia.setEnabled(opci);
+        
     }
 
     @SuppressWarnings("unchecked")
@@ -456,6 +486,48 @@ public class VentanaJugar extends javax.swing.JFrame {
         }
     }//GEN-LAST:event_menuItemLeerActionPerformed
 
+    public void sumarTurno(){
+        ataques.verificarAtaques(juego, turno, numeroTurno);
+        
+        if(turno==(juego.getListaJugadores().size()-1)){
+            juego = verificadorPlaneta.asignarProduccion(juego);
+            turno=0;
+            //turnatPc();
+            numeroTurno++;
+            textoAreaMensajes.setText(textoAreaMensajes.getText()+"\n\nTURNO: "+numeroTurno+"");
+            //ataques.verificarAtaques(juego, turno, numeroTurno);
+        }else{
+            turno++;
+            //turnatPc();
+            //ataques.verificarAtaques(juego, turno, numeroTurno);
+        }
+        if(!verificadorPlaneta.verificarSiTienePlanetas(juego, turno)){
+                sumarTurno();
+                System.out.println("Ya no tiene planetas");
+            }
+        verificarGanador();
+        
+        pintarDatosJugador();
+        turnatPc();
+    }
+    public void turnatPc(){
+        if(juego.getListaJugadores().get(turno).getTipo()==1){
+            JOptionPane.showMessageDialog(null, "Turno de facil");
+            bloquear(false);
+            jpc.iaFacil(juego, turno);
+            bloquear(true);
+            sumarTurno();
+        }else if(juego.getListaJugadores().get(turno).getTipo()==2){
+            JOptionPane.showMessageDialog(null, "Turno de Dificil");
+            bloquear(false);
+            jpc.iaDificil(juego, turno);
+            jpc.iaDificil(juego, turno);
+            jpc.iaDificil(juego, turno);
+            bloquear(true);
+            sumarTurno();
+        }
+    }
+    
     private void menuItemNuevoJuegoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_menuItemNuevoJuegoActionPerformed
         ventanaNuevoMapa.setVisible(true);
         ventanaNuevoMapa.limpiar();
@@ -472,23 +544,32 @@ public class VentanaJugar extends javax.swing.JFrame {
 
     private void botonFinTurnoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_botonFinTurnoActionPerformed
         ataques.verificarAtaques(juego, turno, numeroTurno);
+        
         if(turno==(juego.getListaJugadores().size()-1)){
+            juego = verificadorPlaneta.asignarProduccion(juego);
             turno=0;
-            
+            //turnatPc();
             numeroTurno++;
             textoAreaMensajes.setText(textoAreaMensajes.getText()+"\n\nTURNO: "+numeroTurno+"");
             //ataques.verificarAtaques(juego, turno, numeroTurno);
         }else{
             turno++;
+            //turnatPc();
             //ataques.verificarAtaques(juego, turno, numeroTurno);
         }
+        if(!verificadorPlaneta.verificarSiTienePlanetas(juego, turno)){
+                sumarTurno();
+                System.out.println("Ya no tiene planetas");
+            }
+        verificarGanador();
         
         pintarDatosJugador();
+        turnatPc();
     }//GEN-LAST:event_botonFinTurnoActionPerformed
 
     private void botonConsultarFlotaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_botonConsultarFlotaActionPerformed
         ventanaVerFlota.limpiar();
-        System.out.println("Tamnio flota"+juego.getListaJugadores().get(turno).getListaFlota().size());
+        System.out.println("Tamnio flota: "+juego.getListaJugadores().get(turno).getListaFlota().size());
         ventanaVerFlota.pintar(juego.getListaJugadores().get(turno).getListaFlota());
         ventanaVerFlota.setVisible(true);
     }//GEN-LAST:event_botonConsultarFlotaActionPerformed

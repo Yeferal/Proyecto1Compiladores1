@@ -84,6 +84,7 @@ public class Planeta {
     }
 
     public void setJugador(int jugador) {
+        tieneJugador= true;
         this.jugador = jugador;
     }
 
