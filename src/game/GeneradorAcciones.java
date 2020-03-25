@@ -1,8 +1,10 @@
 
 package game;
 
+import java.awt.event.ActionListener;
 import javax.swing.JButton;
 import objetos.Juego;
+import objetos.Planeta;
 import ventanas.VentanaJugar;
 
 public class GeneradorAcciones {
@@ -19,6 +21,7 @@ public class GeneradorAcciones {
         
         for (int i = 0; i < juego.getListaPlanetas().size(); i++) {
             Accion acccion = new Accion(ventanaJugar,juego.getListaPlanetas().get(i));
+            quitarAccionBoton(juego.getListaPlanetas().get(i).getCoordenadaX(), juego.getListaPlanetas().get(i).getCoordenadaY(), tableroBotones);
             tableroBotones[juego.getListaPlanetas().get(i).getCoordenadaX()][juego.getListaPlanetas().get(i).getCoordenadaY()].addActionListener(acccion);
             
         }
@@ -26,5 +29,12 @@ public class GeneradorAcciones {
         
         
         return tableroBotones;
+    }
+    
+    
+    public void quitarAccionBoton(int x,int y,JButton [][] tableroBotones){
+        for (ActionListener al : tableroBotones[x][y].getActionListeners()) {
+            tableroBotones[x][y].removeActionListener(al);
+        }
     }
 }

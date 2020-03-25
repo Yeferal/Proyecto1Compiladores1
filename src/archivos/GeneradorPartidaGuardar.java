@@ -56,9 +56,11 @@ public class GeneradorPartidaGuardar {
 "            produccion: ";
         texto+=mapa.getProduccionNeutrales()+"\n        },\n" +
 "        finalizacion: ";
-        texto+=mapa.getFinalizacion()+"\n    },\n" +
-"    ";
-        
+        texto+=mapa.getFinalizacion()+",\n" +
+"	turno: ";
+        texto+=mapa.getTurno()+",\n" +
+"	turnoNumero: ";
+        texto+=mapa.getNumeroTurno()+"\n    },\n";
         
     }
     public void generarPlanetas(ArrayList<Planeta> listaPlanetas){
@@ -81,10 +83,16 @@ public class GeneradorPartidaGuardar {
 "	 navesEnviadas: ";
             if(listaPlanetas.get(i).getNavesEnviadas()<0){
                 int na = listaPlanetas.get(i).getNavesEnviadas()*(-1);
-               texto+=na+"\n        }"; 
+               texto+=na+",\n" +
+"	jugadorPlaneta: "; 
             }else{
-                texto+=listaPlanetas.get(i).getNavesEnviadas()+"\n        }";
+                texto+=listaPlanetas.get(i).getNavesEnviadas()+",\n" +
+"	jugadorPlaneta: ";
             }
+            
+            
+            texto+= listaPlanetas.get(i).getJugador()+"\n        }";
+            
             
             if(i!=(listaPlanetas.size()-1)){
                 texto+=",\n        ";

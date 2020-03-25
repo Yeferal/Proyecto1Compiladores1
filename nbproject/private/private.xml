@@ -4,10 +4,12 @@
     <open-files xmlns="http://www.netbeans.org/ns/projectui-open-files/2">
         <group>
             <file>file:/E:/LENOVO-PC/Documents/NetBeansProjects/Compi%201/Proyecto1Compiladores1/src/ventanas/VentanaJugar.java</file>
-            <file>file:/E:/LENOVO-PC/Documents/NetBeansProjects/Compi%201/Proyecto1Compiladores1/src/game/Medicion.java</file>
-            <file>file:/E:/LENOVO-PC/Documents/NetBeansProjects/Compi%201/Proyecto1Compiladores1/src/game/Ataques.java</file>
-            <file>file:/E:/LENOVO-PC/Documents/NetBeansProjects/Compi%201/Proyecto1Compiladores1/src/game/JugadorPC.java</file>
-            <file>file:/E:/LENOVO-PC/Documents/NetBeansProjects/Compi%201/Proyecto1Compiladores1/src/ventanas/VentanaEnviarFlota.java</file>
+            <file>file:/E:/LENOVO-PC/Documents/NetBeansProjects/Compi%201/Proyecto1Compiladores1/src/game/GeneradorIconos.java</file>
+            <file>file:/E:/LENOVO-PC/Documents/NetBeansProjects/Compi%201/Proyecto1Compiladores1/src/analizador/guardar/AnalizadorSintacticoG.java</file>
+            <file>file:/E:/LENOVO-PC/Documents/NetBeansProjects/Compi%201/Proyecto1Compiladores1/src/analizador/guardar/parserG.cup</file>
+            <file>file:/E:/LENOVO-PC/Documents/NetBeansProjects/Compi%201/Proyecto1Compiladores1/src/objetos/Jugador.java</file>
+            <file>file:/E:/LENOVO-PC/Documents/NetBeansProjects/Compi%201/Proyecto1Compiladores1/src/objetos/Planeta.java</file>
+            <file>file:/E:/LENOVO-PC/Documents/NetBeansProjects/Compi%201/Proyecto1Compiladores1/src/analizador/guardar/LexerG.jflex</file>
         </group>
     </open-files>
 </project-private>

@@ -21,6 +21,7 @@ public class ManejadorPlanetas {
         nombre = false;
         naves = false;
         porcentaje = false;
+        produccion = false;
         coordenadaX = false;
         coordenadaY = false;
         navesEnviadas = false;
@@ -61,14 +62,17 @@ public class ManejadorPlanetas {
         completo = true;
         nombre = false;
         naves = false;
+        produccion = false;
         porcentaje = false;
         coordenadaX = false;
         coordenadaY = false;
         navesEnviadas = false;
         jugador = false;
+        System.out.println("Reseteado");
     }
 
     public boolean isCompleto() {
+        System.out.println("CompletoPlanetas: "+completo);
         return completo;
     }
     
@@ -99,55 +103,64 @@ public class ManejadorPlanetas {
     
     public boolean isBNombre(){
         if(!nombre){
+            
             nombre = true;
             return false;
         }
+        
         completo = false;
         return true;
     }
     
     public boolean isBNaves(){
         if(!naves){
+            
             naves = true;
             return false;
         }
+        
         completo = false;
         return true;
     }
     
     public boolean isBProduccion(){
         if(!produccion){
+            System.out.println("Produccion: false");
             produccion = true;
             return false;
         }
-        //
+        System.out.println("Produccion: true");
         completo = false;
         return true;
     }
     
     public boolean isBPorcentaje(){
         if(!porcentaje){
+            System.out.println("Porcentaje: false");
             porcentaje = true;
             return false;
         }
+        System.out.println("Porcentaje: true");
         completo = false;
         return true;
     }
     public boolean isBCoodenadaX(){
         if(!coordenadaX){
+            System.out.println("Coor x: false");
             coordenadaX = true;
             return false;
         }
-        //
+        System.out.println("Coor x: true");
         completo = false;
         return true;
     }
     public boolean isBCoodenadaY(){
         if(!coordenadaY){
+            System.out.println("Coor y: false");
             coordenadaY = true;
             return false;
         }
-        //
+        System.out.println("Coor y: true");
         completo = false;
         return true;
     }

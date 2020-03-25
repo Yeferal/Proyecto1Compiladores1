@@ -52,7 +52,7 @@
             </MenuItem>
             <MenuItem class="javax.swing.JMenuItem" name="menuItemPVP">
               <Properties>
-                <Property name="text" type="java.lang.String" value="PC vs PC"/>
+                <Property name="text" type="java.lang.String" value="GuardarReplay"/>
               </Properties>
             </MenuItem>
           </SubComponents>

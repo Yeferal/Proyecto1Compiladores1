@@ -4,7 +4,7 @@ package manejadores;
 public class ManejadorMapa {
     
     private boolean bId, bTamanio, bAlAzar, bPlanet, bMapaC, bAcumular, bNutrales, bFinalizacion;
-    private boolean completo;
+    private boolean completo, turno,numeroTurno;
     
     public ManejadorMapa(){
         completo = true;
@@ -38,6 +38,10 @@ public class ManejadorMapa {
                 return isBNeutrales();
             case 8:
                 return isBFinalizacion();
+            case 9:
+                return isBTurno();
+            case 10:
+                return isBNumeroTurno();
             default:
                 return true;
         }
@@ -116,6 +120,25 @@ public class ManejadorMapa {
         completo = false;
         return true;
     }
+    
+    public boolean isBTurno(){
+        if(!turno){
+            turno = true;
+            return false;
+        }
+        completo = false;
+        return true;
+    }
+    
+    public boolean isBNumeroTurno(){
+        if(!numeroTurno){
+            numeroTurno = true;
+            return false;
+        }
+        completo = false;
+        return true;
+    }
+    
 
     public boolean isbId() {
         return bId;

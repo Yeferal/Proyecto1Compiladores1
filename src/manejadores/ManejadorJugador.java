@@ -63,22 +63,27 @@ public class ManejadorJugador {
     
     public boolean isBNombre(){
         if(!nombre){
+                
             nombre = true;
             return false;
         }
+        
         completo = false;
         return true;
     }
     public boolean isBTipo(){
         if(!tipo){
+            
             tipo = true;
             return false;
         }
+        
         completo = false;
         return true;
     }
 
     public boolean isCompleto() {
+        
         return completo;
     }
     

@@ -36,6 +36,7 @@ import objetos.Flota;
 import objetos.Juego;
 import objetos.Mensaje;
 import objetos.Planeta;
+import objetos.Error;
 
 public class VentanaJugar extends javax.swing.JFrame {
 
@@ -113,6 +114,31 @@ public class VentanaJugar extends javax.swing.JFrame {
         panel3.setVisible(true);
         iniciarDatos();
         pintarDatosJugador();
+    }
+    
+    public void cargarMapa(){
+        tablero.generarTablero(juego.getMapa().getTamanioX(), juego.getMapa().getTamanioY());
+        tableroBotones = tablero.getTablero();
+        
+        for (int i = 0; i < juego.getMapa().getTamanioX(); i++) {
+            for (int j = 0; j < juego.getMapa().getTamanioY(); j++) {
+                //System.out.println(i+", "+j);
+                panel2.add(tableroBotones[i][j]);  
+            }
+        }
+        tableroBotones = generadorIconos.generarIconosExistentes(juego, tableroBotones);
+        tableroBotones = generadorAcciones.generarAciones(juego, tableroBotones, this);
+        panel2.setLayout(new GridLayout(juego.getMapa().getTamanioX(),juego.getMapa().getTamanioY()));
+        panel2.validate();
+        panel2.repaint();
+        
+        opcion=0;
+        panelOpciones.setVisible(true);
+        panel1.setVisible(true);
+        panel3.setVisible(true);
+        textoAreaMensajes.setText("TURNO: "+numeroTurno+"");
+        pintarDatosJugador();
+        
     }
     public void setPlanetaSeleccionado(Planeta planeta){
         Planeta aux = isTipoPlaneta(planeta.getPosicion(), planeta.getTipo());
@@ -441,7 +467,7 @@ public class VentanaJugar extends javax.swing.JFrame {
         menuItemReplay.setText("Replay");
         menuJugar.add(menuItemReplay);
 
-        menuItemPVP.setText("PC vs PC");
+        menuItemPVP.setText("GuardarReplay");
         menuJugar.add(menuItemPVP);
 
         menuBar.add(menuJugar);
@@ -495,7 +521,7 @@ public class VentanaJugar extends javax.swing.JFrame {
                     //mostrar errores
                 }
             } catch (Exception ex) {
-                ex.printStackTrace();
+                JOptionPane.showMessageDialog(null, "El archivo de entrada no es correcto");
             }
         }
     }//GEN-LAST:event_menuItemLeerActionPerformed
@@ -606,6 +632,8 @@ public class VentanaJugar extends javax.swing.JFrame {
     
     private void menuItemGuardaPartidaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_menuItemGuardaPartidaActionPerformed
         //Codigo para guardar xD
+        juego.getMapa().setTurno(turno);
+        juego.getMapa().setNumeroTurno(numeroTurno);
         GeneradorPartidaGuardar generadorPartidaGuardar = new GeneradorPartidaGuardar();
         generadorPartidaGuardar.generar(juego.getMapa(), juego.getListaPlanetas(), juego.getListaPlanetasNeutrales(), juego.getListaJugadores(), listaMensajes);
         escribirArchivo(generadorPartidaGuardar.getTexto());
@@ -617,27 +645,33 @@ public class VentanaJugar extends javax.swing.JFrame {
         fileChooser.showOpenDialog(this);
         File file = fileChooser.getSelectedFile();
         String ruta = "";
+        AnalizadorSintacticoG sintacitico = null ;
         if(file!=null){
             try {
                 ruta = file.getPath();
                 pathMapa = ruta;
                 AnalizadorLexicoG lexico = new AnalizadorLexicoG(new StringReader(archivo.leerArchivo(ruta)));
-                AnalizadorSintacticoG sintacitico = new AnalizadorSintacticoG(lexico);
+                sintacitico = new AnalizadorSintacticoG(lexico);
                 
                 sintacitico.parse();
-                juego = sintacitico.getJuego();
-                
-                /*//juego = sintacitico.getJuego();
-                //panel2.removeAll();
-                //pintar();
-                if(juego.getManejadorMapa().isCompleto()){
-                    //iniciarMapa();
+                if(sintacitico.isCorrecto()){
+                    juego = sintacitico.getJuego();
+                    listaMensajes = sintacitico.getListaMensajes();
+                    panel2.removeAll();
+                    turno = juego.getMapa().getTurno();
+                    numeroTurno = juego.getMapa().getNumeroTurno();
+                    cargarMapa();
                 }else{
-                    JOptionPane.showMessageDialog(null, "El Archivo de Entrada no es Correcto");
-                    //mostrar errores
-                }*/
+                    JOptionPane.showMessageDialog(null, "El archivo de entrada no es correcto");
+                }
+                
             } catch (Exception ex) {
-                ex.printStackTrace();
+                //ex.printStackTrace();
+                JOptionPane.showMessageDialog(null, "El archivo de entrada no es correcto");
+                ArrayList<Error> listaErrores = sintacitico.getListaErrores();
+                for (int i = 0; i < listaErrores.size(); i++) {
+                    System.out.println(listaErrores.get(i).toString());
+                }
             }
         }
         

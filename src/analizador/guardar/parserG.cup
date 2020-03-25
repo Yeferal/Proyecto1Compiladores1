@@ -9,6 +9,7 @@ import objetos.Error;
 //Codigo para el parser, variables, metodos
 parser code
 {:
+    boolean correcto = true;
     Juego juego;
     Mapa mapa;
     ManejadorMapa manejadorMapa;
@@ -31,9 +32,21 @@ parser code
     public void setJuego(){
         juego = new Juego(mapa,manejadorMapa,listaPlanetas,listaPlanetasNeutrales,listaJugadores);
     }
+    
+    public boolean isCorrecto(){
+        return correcto;
+    }
 
     public Juego getJuego(){
         return juego;
+    }
+
+    public ArrayList<Mensaje> getListaMensajes(){
+        return listaMensajes;
+    }
+
+    public ArrayList<Flota> getListaFlota(){
+        return listaFlota;
     }
 
     private Symbol s;
@@ -49,12 +62,17 @@ parser code
         }
 
     public void syntax_error(Symbol s){
+            correcto = false;
             if(s!=null){
                 Error e = new Error((String) s.value, "Sintactico", "Error Sintaxis token: " + s.right + " " + s.left + " " + s.value, s.right, s.left);
                 listaErrores.add(e);
                 //escribirErrores(e);
                 setAccion("ERROR","Error Sintaxis token: Linea: " + (s.right+1) + ",   Columna: " + (s.left+1) + ",  Simbolo: " + s.value, "");
             }
+    }
+
+    public ArrayList<Error> getListaErrores(){
+        return listaErrores;
     }
 
 :}
@@ -84,7 +102,7 @@ action code
 //Declaraciones 
 terminal CORCHE_A, CORCHE_C, DOS_PUNTOS, COMA, COMILLAS, LLAVES_A, LLAVES_C;
 terminal MAPA, PLANETAS, PLANETAS_NEUTRALES, JUGADORES;
-terminal ID,TAMANO,FILAS,COLUMNAS, ALAZAR, PLANET_NEU, MAPA_CIEGO, ACUMULAR, NEUTRALES, MOSTRAR_NAVES, MOSTRAR_ESTADISTICAS, PRODUCCION, FINALIZACION, IDENTIFICADOR,NUMERO;
+terminal ID,TAMANO,FILAS,COLUMNAS, ALAZAR, PLANET_NEU, MAPA_CIEGO, ACUMULAR, NEUTRALES, MOSTRAR_NAVES, MOSTRAR_ESTADISTICAS, PRODUCCION, FINALIZACION, IDENTIFICADOR,NUMERO,TURNO_NUMERO;
 terminal NOMBRE, NAVES, PORCENTAJE_MUERTES, NICK_NAME,PALABRA, COORDENADA_X, COORDENADA_Y,NAVES_ENVIADAS,JUGADOR;
 terminal PLANETAS_JUGADOR, TIPO, HUMANO, FACIL, DIFICIL;
 terminal TRUE, FALSE;
@@ -110,9 +128,11 @@ INICIO ::=  LLAVES_A {:manejadorJuego = new ManejadorJuego();:} S0 LLAVES_C LLAV
                     :};
 
 S0 ::= 	 MAPA {: manejadorJuego.isExiste(1); mapa = new Mapa();:} DOS_PUNTOS LLAVES_A {::} ESTRUCTURA_MAPA LLAVES_C FIN_S0
-        |PLANETAS {:manejadorJuego.isExiste(2); p = new Planeta();:} DOS_PUNTOS CORCHE_A {::} ESTRUCTURA_PLANETAS CORCHE_C FIN_S0
-	|PLANETAS_NEUTRALES {:manejadorJuego.isExiste(3); p = new Planeta();:} DOS_PUNTOS CORCHE_A {::} ESTRUCTURA_PLANT_NEU CORCHE_C FIN_S0
-	|JUGADORES {:manejadorJuego.isExiste(4); jugador = new Jugador(); :} DOS_PUNTOS CORCHE_A {::} ESTRUCTURA_JUGADORES CORCHE_C FIN_S0;
+        |PLANETAS {:manejadorJuego.isExiste(2); p = new Planeta(); manejadorPlanetas.resetear();:} DOS_PUNTOS CORCHE_A {::} ESTRUCTURA_PLANETAS CORCHE_C FIN_S0
+	|PLANETAS_NEUTRALES {:manejadorJuego.isExiste(3); p = new Planeta(); manejadorPlanetas.resetear();:} DOS_PUNTOS CORCHE_A {::} ESTRUCTURA_PLANT_NEU CORCHE_C FIN_S0
+	|JUGADORES {:manejadorJuego.isExiste(4); jugador = new Jugador(); :} DOS_PUNTOS CORCHE_A {::} ESTRUCTURA_JUGADORES CORCHE_C FIN_S0
+        |error:e S0 {:parser.syntax_error((Symbol)e);:}
+        |error:e S1 {:parser.syntax_error((Symbol)e);:};
 
 FIN_S0 ::= COMA S0
 	  |; 
@@ -143,6 +163,20 @@ ESTRUCTURA_MAPA ::=  ID DOS_PUNTOS COMILLAS IDENTIFICADOR:a COMILLAS {:
                     |FINALIZACION DOS_PUNTOS NUMERO:n {: 
                     if(!manejadorMapa.isExiste(8)){
                         mapa.setFinalizacion(Integer.parseInt((String) n));
+                    }else{
+                        parser.syntax_error((Symbol)n);
+                    }
+:} MAPA_FIN
+                    |TURNO DOS_PUNTOS NUMERO:n {: 
+                    if(!manejadorMapa.isExiste(9)){
+                        mapa.setTurno(Integer.parseInt((String) n));
+                    }else{
+                        parser.syntax_error((Symbol)n);
+                    }
+:} MAPA_FIN
+                    |TURNO_NUMERO DOS_PUNTOS NUMERO:n {: 
+                    if(!manejadorMapa.isExiste(10)){
+                        mapa.setNumeroTurno(Integer.parseInt((String) n));
                     }else{
                         parser.syntax_error((Symbol)n);
                     }
@@ -194,7 +228,7 @@ ESTRUCTURA_PLANETAS ::=  LLAVES_A ATRIB_PLANETAS LLAVES_C{:
                             }:};
 
 ESTRUCTURA_PLANT_NEU ::= LLAVES_A ATRIB_PLANETAS LLAVES_C {: 
-                                if(manejadorPlanetas.isExistPlaneta(listaPlanetas,p)){
+                                if(manejadorPlanetas.isExistPlaneta(listaPlanetasNeutrales,p)){
                                     if(manejadorPlanetas.isCompleto()){
                                         p.setTipo(0);
                                         listaPlanetasNeutrales.add(p);
@@ -204,7 +238,7 @@ ESTRUCTURA_PLANT_NEU ::= LLAVES_A ATRIB_PLANETAS LLAVES_C {:
                                 }
                     :} COMA ESTRUCTURA_PLANT_NEU
 			|LLAVES_A ATRIB_PLANETAS LLAVES_C {: 
-                        if(manejadorPlanetas.isExistPlaneta(listaPlanetas,p)){
+                        if(manejadorPlanetas.isExistPlaneta(listaPlanetasNeutrales,p)){
                             if(manejadorPlanetas.isCompleto()){
                                 p.setTipo(0);
                                 listaPlanetasNeutrales.add(p);
@@ -230,8 +264,11 @@ ATP_FIN ::= COMA ATRIB_PLANETAS
 	     | ;
 
 ESTRUCTURA_JUGADORES ::= LLAVES_A ATRIB_JUGADORES LLAVES_C {:
+                            
                             if(jugador.getNombre()!=null){
+                                jugador.pintar();
                                 if(manejadorJugador.isExistJugador(listaJugadores,jugador) && manejadorJugador.isCompleto()){
+                                    jugador.pintar();
                                     listaJugadores.add(jugador);
                                     manejadorJugador.resetear();
                                     jugador = new Jugador();
@@ -239,8 +276,11 @@ ESTRUCTURA_JUGADORES ::= LLAVES_A ATRIB_JUGADORES LLAVES_C {:
                             }
 :} COMA ESTRUCTURA_JUGADORES
 			|LLAVES_A ATRIB_JUGADORES LLAVES_C {:
+                            
                             if(jugador.getNombre()!=null){
-                                if(manejadorJugador.isExistJugador(listaJugadores,jugador) && manejadorJugador.isCompleto()){
+                                jugador.pintar();
+                                if(manejadorJugador.isExistJugador(listaJugadores,jugador) ){
+                                    jugador.pintar();
                                     listaJugadores.add(jugador);
                                     manejadorJugador.resetear();
                                     jugador = new Jugador();
@@ -255,7 +295,7 @@ ATRIB_JUGADORES ::=  NOMBRE DOS_PUNTOS COMILLAS IDENTIFICADOR:a COMILLAS {:
                             
                         }else{parser.syntax_error((Symbol)a);}
 :} ATJ_FIN
-		    |TIPO DOS_PUNTOS DIFICULTADES:t {: manejadorJugador.isExiste(1); jugador.setTipo(Integer.parseInt(t.toString()));:} ATJ_FIN;
+		    |TIPO DOS_PUNTOS DIFICULTADES:t {: manejadorJugador.isExiste(2); jugador.setTipo(Integer.parseInt(t.toString()));:} ATJ_FIN;
 
 ATJ_FIN ::=  COMA ATRIB_JUGADORES
 	    | ;

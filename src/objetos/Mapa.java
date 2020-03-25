@@ -6,6 +6,7 @@ public class Mapa {
     private String id;
     private int tamanioX, tamanioY, planetasNeutrales, produccionNeutrales, finalizacion;
     private boolean alAzar, mapaCiego, acumular, mostrarNavesNeutrales, mostrarEstadisticasNeutrales;
+    private int turno,numeroTurno;
 
     public Mapa(){
         alAzar = false;
@@ -106,6 +107,24 @@ public class Mapa {
     public void setMostrarEstadisticasNeutrales(boolean mostrarEstadisticasNeutrales) {
         this.mostrarEstadisticasNeutrales = mostrarEstadisticasNeutrales;
     }
+
+    public int getTurno() {
+        return turno;
+    }
+
+    public void setTurno(int turno) {
+        this.turno = turno;
+    }
+
+    public int getNumeroTurno() {
+        return numeroTurno;
+    }
+
+    public void setNumeroTurno(int numeroTurno) {
+        this.numeroTurno = numeroTurno;
+    }
+    
+    
     
     public void pintar(){
         System.out.println("____________________________________________________________________________________________");
