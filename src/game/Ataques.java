@@ -39,21 +39,21 @@ public class Ataques {
         if (flota.getTipoPlaneta()==1) {
             
             if(batallar(flota, juego.getListaPlanetas().get(flota.getDestino()))){
-                m = new Mensaje(juego.getListaPlanetas().get(flota.getDestino()).getNombre(), juego.getListaJugadores().get(turno).getNombre(),true, turno);
+                m = new Mensaje(juego.getListaPlanetas().get(flota.getDestino()).getNombre(), juego.getListaJugadores().get(turno).getNombre(),true, numeroTurno);
                 cambiarPlaneta(juego, flota.getDestino(),turno, 1);
                 ventanaJugar.actualizarBoton(juego.getListaPlanetas().get(flota.getDestino()).getCoordenadaX(), juego.getListaPlanetas().get(flota.getDestino()).getCoordenadaY(), juego.getListaPlanetas().get(flota.getDestino()));
             }else{
-                m = new Mensaje(juego.getListaPlanetas().get(flota.getDestino()).getNombre(), juego.getListaJugadores().get(turno).getNombre(),false, turno);
+                m = new Mensaje(juego.getListaPlanetas().get(flota.getDestino()).getNombre(), juego.getListaJugadores().get(turno).getNombre(),false, numeroTurno);
             }
             
         }else{
             
             if(batallar(flota, juego.getListaPlanetasNeutrales().get(flota.getDestino()))){
-                m = new Mensaje(juego.getListaPlanetasNeutrales().get(flota.getDestino()).getNombre(), juego.getListaJugadores().get(turno).getNombre(),true, turno);
+                m = new Mensaje(juego.getListaPlanetasNeutrales().get(flota.getDestino()).getNombre(), juego.getListaJugadores().get(turno).getNombre(),true, numeroTurno);
                 cambiarPlaneta(juego, flota.getDestino(),turno, 0);
                 ventanaJugar.actualizarBoton(juego.getListaPlanetasNeutrales().get(flota.getDestino()).getCoordenadaX(), juego.getListaPlanetasNeutrales().get(flota.getDestino()).getCoordenadaY(), juego.getListaPlanetas().get(juego.getListaPlanetas().size()-1));
             }else{
-                m = new Mensaje(juego.getListaPlanetasNeutrales().get(flota.getDestino()).getNombre(), juego.getListaJugadores().get(turno).getNombre(),false, turno);
+                m = new Mensaje(juego.getListaPlanetasNeutrales().get(flota.getDestino()).getNombre(), juego.getListaJugadores().get(turno).getNombre(),false, numeroTurno);
             }
             
         }

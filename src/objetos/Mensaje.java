@@ -18,6 +18,10 @@ public class Mensaje {
         setResultadoS();
     }
 
+    public Mensaje() {
+    }
+    
+
     public void setResultadoS(){
         if (resultado) {
             resultadoS = " ha Caido contra un ataque de ";
@@ -52,6 +56,14 @@ public class Mensaje {
     
     public String toString(){
         return "El planeta "+planeta+resultadoS+Jugador;
+    }
+
+    public boolean isResultado() {
+        return resultado;
+    }
+
+    public void setResultado(boolean resultado) {
+        this.resultado = resultado;
     }
     
     

@@ -73,6 +73,15 @@ public class Planeta {
     public int getCoordenadaY(){
         return coordenadaY;
     }
+
+    public void setCoordenadaX(int coordenadaX) {
+        this.coordenadaX = coordenadaX;
+    }
+
+    public void setCoordenadaY(int coordenadaY) {
+        this.coordenadaY = coordenadaY;
+    }
+    
     
     public void setCoordenadas(int x, int y){
         this.coordenadaX = x;

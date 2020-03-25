@@ -1,9 +1,13 @@
 
 package ventanas;
 
+import analizador.guardar.AnalizadorLexicoG;
+import analizador.guardar.AnalizadorSintacticoG;
 import analizadores.AnalizadorLexico;
 import analizadores.AnalizadorSintactico;
 import archivos.Archivo;
+import archivos.GeneradorPartidaGuardar;
+import archivos.GuardarArchivo;
 import game.Accion;
 import game.ActualizacionPlanetas;
 import game.Ataques;
@@ -419,9 +423,19 @@ public class VentanaJugar extends javax.swing.JFrame {
         menuJugar.add(menuItemLeer);
 
         menuItemCargarPartida.setText("Cargar Partida");
+        menuItemCargarPartida.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                menuItemCargarPartidaActionPerformed(evt);
+            }
+        });
         menuJugar.add(menuItemCargarPartida);
 
         menuItemGuardaPartida.setText("Guardar Partida");
+        menuItemGuardaPartida.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                menuItemGuardaPartidaActionPerformed(evt);
+            }
+        });
         menuJugar.add(menuItemGuardaPartida);
 
         menuItemReplay.setText("Replay");
@@ -512,7 +526,7 @@ public class VentanaJugar extends javax.swing.JFrame {
     }
     public void turnatPc(){
         if(juego.getListaJugadores().get(turno).getTipo()==1){
-            JOptionPane.showMessageDialog(null, "Turno de facil");
+            JOptionPane.showMessageDialog(null, "Turno de Facil");
             bloquear(false);
             jpc.iaFacil(juego, turno);
             bloquear(true);
@@ -573,6 +587,63 @@ public class VentanaJugar extends javax.swing.JFrame {
         ventanaVerFlota.pintar(juego.getListaJugadores().get(turno).getListaFlota());
         ventanaVerFlota.setVisible(true);
     }//GEN-LAST:event_botonConsultarFlotaActionPerformed
+
+    public void escribirArchivo(String texto){
+        GuardarArchivo guardarArchivo = new GuardarArchivo();
+        JFileChooser fileChooser = new JFileChooser();
+        fileChooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
+        fileChooser.showOpenDialog(this);
+        File file = fileChooser.getSelectedFile();
+        
+        String ruta = "";
+        if(file!=null){
+            ruta = file.getPath();
+            String nombreProyecto = JOptionPane.showInputDialog("Escriba el nombre de la Partida");
+            guardarArchivo.crearJSON(nombreProyecto, ruta, texto);
+            JOptionPane.showMessageDialog(null, "Se guardo ls Partida");
+        }
+    }
+    
+    private void menuItemGuardaPartidaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_menuItemGuardaPartidaActionPerformed
+        //Codigo para guardar xD
+        GeneradorPartidaGuardar generadorPartidaGuardar = new GeneradorPartidaGuardar();
+        generadorPartidaGuardar.generar(juego.getMapa(), juego.getListaPlanetas(), juego.getListaPlanetasNeutrales(), juego.getListaJugadores(), listaMensajes);
+        escribirArchivo(generadorPartidaGuardar.getTexto());
+    }//GEN-LAST:event_menuItemGuardaPartidaActionPerformed
+
+    private void menuItemCargarPartidaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_menuItemCargarPartidaActionPerformed
+        JFileChooser fileChooser = new JFileChooser();
+        fileChooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
+        fileChooser.showOpenDialog(this);
+        File file = fileChooser.getSelectedFile();
+        String ruta = "";
+        if(file!=null){
+            try {
+                ruta = file.getPath();
+                pathMapa = ruta;
+                AnalizadorLexicoG lexico = new AnalizadorLexicoG(new StringReader(archivo.leerArchivo(ruta)));
+                AnalizadorSintacticoG sintacitico = new AnalizadorSintacticoG(lexico);
+                
+                sintacitico.parse();
+                juego = sintacitico.getJuego();
+                
+                /*//juego = sintacitico.getJuego();
+                //panel2.removeAll();
+                //pintar();
+                if(juego.getManejadorMapa().isCompleto()){
+                    //iniciarMapa();
+                }else{
+                    JOptionPane.showMessageDialog(null, "El Archivo de Entrada no es Correcto");
+                    //mostrar errores
+                }*/
+            } catch (Exception ex) {
+                ex.printStackTrace();
+            }
+        }
+        
+        
+        
+    }//GEN-LAST:event_menuItemCargarPartidaActionPerformed
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton botonConsultarFlota;

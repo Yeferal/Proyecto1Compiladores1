@@ -16,6 +16,9 @@ public class Flota {
         this.tipoPlaneta = tipoPlaneta;
         atacado=false;
     }
+    public Flota(){
+        
+    }
 
     public boolean isAtacado() {
         return atacado;

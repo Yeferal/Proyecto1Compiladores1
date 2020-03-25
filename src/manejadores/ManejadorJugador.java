@@ -11,6 +11,14 @@ public class ManejadorJugador {
     AnalizadorLexicoJugador lexico;
     AnalizadorSintacticoJugador sintactico;
     
+    public boolean nombre,tipo, completo;
+    
+    public ManejadorJugador(){
+        completo = true;
+        nombre = false;
+        tipo = false;
+    }
+    
     public boolean isCorrecto(String nombre){
         lexico = new AnalizadorLexicoJugador(new StringReader(nombre));
         sintactico = new AnalizadorSintacticoJugador(lexico);
@@ -35,4 +43,44 @@ public class ManejadorJugador {
         
         return true;
     }
+    
+    public void resetear(){
+        completo = true;
+        nombre = false;
+        tipo = false;
+    }
+    public boolean isExiste(int tipo){
+        
+        switch(tipo){
+            case 1:
+                return isBNombre();
+            case 2:
+                return isBTipo();
+            default:
+                return true;
+        }
+    }
+    
+    public boolean isBNombre(){
+        if(!nombre){
+            nombre = true;
+            return false;
+        }
+        completo = false;
+        return true;
+    }
+    public boolean isBTipo(){
+        if(!tipo){
+            tipo = true;
+            return false;
+        }
+        completo = false;
+        return true;
+    }
+
+    public boolean isCompleto() {
+        return completo;
+    }
+    
+    
 }
