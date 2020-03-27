@@ -38,6 +38,6 @@ public class Error {
         return "Error: "+tipo+" "+descripcion+"--------->"+"Linea: "+linea+" Columna: "+columna;
     }
     public String toStringL(){
-        return "Error: "+tipo+" "+descripcion+"--------->"+"Linea: "+linea+" Columna: "+columna;
+        return descripcion+"--------->"+"Linea: "+linea+" Columna: "+columna;
     }
 }

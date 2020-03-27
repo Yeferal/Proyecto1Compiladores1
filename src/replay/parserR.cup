@@ -1,0 +1,344 @@
+//codigo usuario
+package replay;
+
+import analizador.guardar.ManejadorFlota;
+import analizador.guardar.ManejadorJuego;
+import analizador.guardar.ManejadorMensaje;
+import java_cup.runtime.Symbol;
+import java.util.ArrayList;
+import manejadores.*;
+import objetos.*;
+import objetos.Error;
+
+//Codigo para el parser, variables, metodos
+parser code
+{:
+    boolean correcto = true;
+    Juego juego;
+    Mapa mapa;
+    ManejadorMapa manejadorMapa;
+    ArrayList<Planeta> listaPlanetas;
+    ArrayList<Planeta> listaPlanetasNeutrales;
+    ArrayList<Jugador> listaJugadores;
+    ArrayList<Mensaje> listaMensajes;
+    ArrayList<Repeticion> listaRepeticion;
+    ArrayList<Error> listaErrores = new  ArrayList<>();
+
+    public void setAtributos(ManejadorMapa manejadorMapa, Mapa mapa, ArrayList<Planeta> listaPlanetas, ArrayList<Planeta> listaPlanetasNeutrales, ArrayList<Jugador> listaJugadores,ArrayList<Mensaje> listaMensajes, ArrayList<Repeticion> listaRepeticion){
+        this.mapa = mapa;
+        this.manejadorMapa = manejadorMapa;
+        this.listaPlanetas = listaPlanetas;
+        this.listaPlanetasNeutrales = listaPlanetasNeutrales;
+        this.listaJugadores = listaJugadores;
+        this.listaMensajes = listaMensajes;
+        this.listaRepeticion = listaRepeticion;
+    }
+    public void setJuego(){
+        juego = new Juego(mapa,manejadorMapa,listaPlanetas,listaPlanetasNeutrales,listaJugadores);
+    }
+    
+    public boolean isCorrecto(){
+        return correcto;
+    }
+
+    public Juego getJuego(){
+        return juego;
+    }
+
+    public ArrayList<Mensaje> getListaMensajes(){
+        return listaMensajes;
+    }
+
+    public ArrayList<Repeticion> getListaRepeticiones(){
+        return listaRepeticion;
+    }
+
+    private Symbol s;
+    public void syntaxError(Symbol s){
+        this.s = s;
+    }
+    public Symbol getS(Symbol s){
+        return this.s = s;
+    }
+
+    public void setAccion(String tipo,String mensaje,String accion){
+            System.out.println(tipo+"         "+mensaje);
+        }
+
+    public void syntax_error(Symbol s){
+            correcto = false;
+            if(s!=null){
+                Error e = new Error((String) s.value, "Sintactico", "Error Sintaxis token: " + s.right + " " + s.left + " " + s.value, s.right, s.left);
+                listaErrores.add(e);
+                //escribirErrores(e);
+                setAccion("ERROR","Error Sintaxis token: Linea: " + (s.right+1) + ",   Columna: " + (s.left+1) + ",  Simbolo: " + s.value, "");
+            }
+    }
+
+    public ArrayList<Error> getListaErrores(){
+        return listaErrores;
+    }
+
+:}
+
+//Coidgo para las acciones gramaticales
+
+action code
+{:
+    Mapa mapa = null;
+    ArrayList<Planeta> listaPlanetas = new ArrayList<>();
+    ArrayList<Planeta> listaPlanetasNeutrales = new ArrayList<>();
+    ArrayList<Jugador> listaJugadores = new ArrayList<>();
+    ArrayList<Mensaje> listaMensajes = new ArrayList<>();
+    ArrayList<Repeticion> listaRepeticion = new ArrayList<>();
+    ManejadorMapa manejadorMapa = new ManejadorMapa();
+    ManejadorPlanetas manejadorPlanetas = new ManejadorPlanetas();
+    ManejadorJugador manejadorJugador = new ManejadorJugador();
+    ManejadorMensaje manejadorMensaje = new ManejadorMensaje();
+    ManejadorReplay manejadorReplay = new ManejadorReplay();
+    ManejadorJuego manejadorJuego = new ManejadorJuego();
+    Planeta p;
+    Jugador jugador;
+    Repeticion repeticion;
+    Mensaje mensaje;
+:}
+
+//Declaraciones 
+terminal CORCHE_A, CORCHE_C, DOS_PUNTOS, COMA, COMILLAS, LLAVES_A, LLAVES_C;
+terminal MAPA, PLANETAS, PLANETAS_NEUTRALES, JUGADORES;
+terminal ID,TAMANO,FILAS,COLUMNAS, ALAZAR, PLANET_NEU, MAPA_CIEGO, ACUMULAR, NEUTRALES, MOSTRAR_NAVES, MOSTRAR_ESTADISTICAS, PRODUCCION, FINALIZACION, IDENTIFICADOR,NUMERO,TURNO_NUMERO;
+terminal NOMBRE, NAVES, PORCENTAJE_MUERTES, NICK_NAME,PALABRA, COORDENADA_X, COORDENADA_Y,NAVES_ENVIADAS,JUGADOR;
+terminal PLANETAS_JUGADOR, TIPO, HUMANO, FACIL, DIFICIL;
+terminal TRUE, FALSE;
+terminal REPETICION, MENSAJES, ORIGEN,DESTINO, TIPOPLANETA, TURNO_JUGADOR, TURNO_LLEGADA, TURNO, NOMBRE_JUG, RESULTADO,COORDENADAX, COORDENADAY;
+
+// declaracion no terminales
+non terminal INICIO, S0, S1;
+non terminal ESTRUCTURA_MAPA, DIMENSION, BOLEANO, ATRIB_NEU, ESTRUCTURA_PLANETAS, ESTRUCTURA_PLANT_NEU, ATRIB_PLANETAS, ESTRUCTURA_JUGADORES, ATRIB_JUGADORES, PLANET_ASIG, DIFICULTADES, MAPA_FIN;
+non terminal FIN_S0, FIN_ATRIB_NEU, ATP_FIN, ATJ_FIN, FIN_S1, ESTRUCTURA_REPETICION, ETF_FIN, ESTRUCTURA_MENSAJE, ETM_FIN;
+non terminal ATRIB_REPETICION, ATRIB_MENSAJE;
+
+//presedencia de menor a mayor
+//precedence left NOMBRE, PALABRA;
+
+
+start with INICIO;
+
+//Reglas Semanticas
+
+INICIO ::=  LLAVES_A {:manejadorJuego = new ManejadorJuego();:} S0 LLAVES_C LLAVES_A S1 LLAVES_C
+                    {: parser.setAtributos(manejadorMapa, mapa, listaPlanetas, listaPlanetasNeutrales, listaJugadores, listaMensajes, listaRepeticion);
+                    parser.setJuego();
+                    :};
+
+S0 ::= 	 MAPA {: manejadorJuego.isExiste(1); mapa = new Mapa();:} DOS_PUNTOS LLAVES_A {::} ESTRUCTURA_MAPA LLAVES_C FIN_S0
+        |PLANETAS {:manejadorJuego.isExiste(2); p = new Planeta(); manejadorPlanetas.resetear();:} DOS_PUNTOS CORCHE_A {::} ESTRUCTURA_PLANETAS CORCHE_C FIN_S0
+	|PLANETAS_NEUTRALES {:manejadorJuego.isExiste(3); p = new Planeta(); manejadorPlanetas.resetear();:} DOS_PUNTOS CORCHE_A {::} ESTRUCTURA_PLANT_NEU CORCHE_C FIN_S0
+	|JUGADORES {:manejadorJuego.isExiste(4); jugador = new Jugador(); :} DOS_PUNTOS CORCHE_A {::} ESTRUCTURA_JUGADORES CORCHE_C FIN_S0
+        |error:e S0 {:parser.syntax_error((Symbol)e);:}
+        |error:e S1 {:parser.syntax_error((Symbol)e);:};
+
+FIN_S0 ::= COMA S0
+	  |; 
+
+ESTRUCTURA_MAPA ::=  ID DOS_PUNTOS COMILLAS IDENTIFICADOR:a COMILLAS {: 
+                    if(!manejadorMapa.isExiste(1)){
+                        mapa.setId((String) a);
+                    }else{
+                        parser.syntax_error((Symbol)a);
+                    }
+:} MAPA_FIN
+                    |TAMANO DOS_PUNTOS LLAVES_A DIMENSION LLAVES_C  MAPA_FIN
+                    |MAPA_CIEGO DOS_PUNTOS BOLEANO:b {: 
+                    if(!manejadorMapa.isExiste(5)){
+                        mapa.setMapaCiego((boolean) b);
+                    }else{
+                        parser.syntax_error((Symbol)b);
+                    }
+:} MAPA_FIN
+                    |NEUTRALES DOS_PUNTOS LLAVES_A ATRIB_NEU LLAVES_C MAPA_FIN;
+
+MAPA_FIN ::= 	 COMA ESTRUCTURA_MAPA
+		| ;
+
+DIMENSION ::=    FILAS DOS_PUNTOS NUMERO:x COMA COLUMNAS DOS_PUNTOS NUMERO:y {: 
+                    if(!manejadorMapa.isExiste(2)){
+                        mapa.setTamanioX(Integer.parseInt((String) x));
+                        mapa.setTamanioY(Integer.parseInt((String) y));
+                    }
+:}
+                |COLUMNAS DOS_PUNTOS NUMERO:y COMA FILAS DOS_PUNTOS NUMERO:x {: 
+                    if(!manejadorMapa.isExiste(2)){
+                        mapa.setTamanioX(Integer.parseInt((String) x));
+                        mapa.setTamanioY(Integer.parseInt((String) y));
+                    }
+:};
+
+BOLEANO ::=  TRUE {:RESULT = true;:}
+            |FALSE {:RESULT = false;:};
+
+ATRIB_NEU ::=  	 MOSTRAR_NAVES DOS_PUNTOS BOLEANO:b {:mapa.setMostrarNavesNeutrales((boolean) b);:} FIN_ATRIB_NEU
+		|MOSTRAR_ESTADISTICAS DOS_PUNTOS BOLEANO:b {:mapa.setMostrarEstadisticasNeutrales((boolean) b);:} FIN_ATRIB_NEU
+		|PRODUCCION DOS_PUNTOS NUMERO:n {:mapa.setProduccionNeutrales(Integer.parseInt((String) n));:} FIN_ATRIB_NEU;
+
+FIN_ATRIB_NEU ::= COMA ATRIB_NEU
+		  | ;
+
+ESTRUCTURA_PLANETAS ::=  LLAVES_A ATRIB_PLANETAS LLAVES_C{:
+                    if(manejadorPlanetas.isExistPlaneta(listaPlanetas,p)){
+                        if(manejadorPlanetas.isCompleto()){
+                            p.setTipo(1);
+                            listaPlanetas.add(p);
+                            manejadorPlanetas.resetear();
+                            p = new Planeta();
+                        }
+                    }:}  COMA ESTRUCTURA_PLANETAS
+			|LLAVES_A ATRIB_PLANETAS LLAVES_C {:
+                            if(manejadorPlanetas.isExistPlaneta(listaPlanetas,p)){
+                                if(manejadorPlanetas.isCompleto()){
+                                    p.setTipo(1);
+                                    listaPlanetas.add(p);
+                                    manejadorPlanetas.resetear();
+                                    p = new Planeta();
+                                }
+                            }:};
+
+ESTRUCTURA_PLANT_NEU ::= LLAVES_A ATRIB_PLANETAS LLAVES_C {: 
+                                if(manejadorPlanetas.isExistPlaneta(listaPlanetasNeutrales,p)){
+                                    if(manejadorPlanetas.isCompleto()){
+                                        p.setTipo(0);
+                                        listaPlanetasNeutrales.add(p);
+                                        manejadorPlanetas.resetear();
+                                        p = new Planeta();
+                                    }
+                                }
+                    :} COMA ESTRUCTURA_PLANT_NEU
+			|LLAVES_A ATRIB_PLANETAS LLAVES_C {: 
+                        if(manejadorPlanetas.isExistPlaneta(listaPlanetasNeutrales,p)){
+                            if(manejadorPlanetas.isCompleto()){
+                                p.setTipo(0);
+                                listaPlanetasNeutrales.add(p);
+                                manejadorPlanetas.resetear();
+                                p = new Planeta();
+                            }
+                        }
+                    :};
+
+ATRIB_PLANETAS ::=   NOMBRE DOS_PUNTOS COMILLAS IDENTIFICADOR:a {:manejadorPlanetas.isExiste(1);:} COMILLAS {:
+                    if(manejadorPlanetas.isCorrecto((String) a)){
+                        p.setNombre((String) a);
+                    }else{p.setNombre(null); parser.syntax_error((Symbol)a);}:} ATP_FIN
+                    |NAVES DOS_PUNTOS NUMERO:n {:p.setNaves(Integer.parseInt((String) n));:} {:manejadorPlanetas.isExiste(2);:} ATP_FIN
+                    |PRODUCCION DOS_PUNTOS NUMERO:n {:p.setProduccion(Integer.parseInt((String) n));:} {:manejadorPlanetas.isExiste(3);:} ATP_FIN
+                    |PORCENTAJE_MUERTES DOS_PUNTOS NUMERO:n {:p.setPorcentajeMuertes(Double.parseDouble((String) n));:} {:manejadorPlanetas.isExiste(4);:} ATP_FIN 
+                    |COORDENADA_X DOS_PUNTOS NUMERO:n {:p.setCoordenadaX(Integer.parseInt((String) n)); manejadorPlanetas.isExiste(5);:} ATP_FIN
+                    |COORDENADA_Y DOS_PUNTOS NUMERO:n {:p.setCoordenadaY(Integer.parseInt((String) n)); manejadorPlanetas.isExiste(6);:} ATP_FIN
+                    |NAVES_ENVIADAS DOS_PUNTOS NUMERO:n {:p.setNavesEnviadas(Integer.parseInt((String) n));  manejadorPlanetas.isExiste(7);:} ATP_FIN
+                    |JUGADOR DOS_PUNTOS NUMERO:n {:p.setJugador(Integer.parseInt((String) n)); manejadorPlanetas.isExiste(8);:} ATP_FIN;
+
+ATP_FIN ::= COMA ATRIB_PLANETAS
+	     | ;
+
+ESTRUCTURA_JUGADORES ::= LLAVES_A ATRIB_JUGADORES LLAVES_C {:
+                            
+                            if(jugador.getNombre()!=null){
+                                jugador.pintar();
+                                if(manejadorJugador.isExistJugador(listaJugadores,jugador) && manejadorJugador.isCompleto()){
+                                    jugador.pintar();
+                                    listaJugadores.add(jugador);
+                                    manejadorJugador.resetear();
+                                    jugador = new Jugador();
+                                }
+                            }
+:} COMA ESTRUCTURA_JUGADORES
+			|LLAVES_A ATRIB_JUGADORES LLAVES_C {:
+                            
+                            if(jugador.getNombre()!=null){
+                                jugador.pintar();
+                                if(manejadorJugador.isExistJugador(listaJugadores,jugador) ){
+                                    jugador.pintar();
+                                    listaJugadores.add(jugador);
+                                    manejadorJugador.resetear();
+                                    jugador = new Jugador();
+                                }
+                            }
+:} ;
+
+ATRIB_JUGADORES ::=  NOMBRE DOS_PUNTOS COMILLAS IDENTIFICADOR:a COMILLAS {:
+                        manejadorJugador.isExiste(1);
+                        if(manejadorJugador.isCorrecto((String) a)){
+                            jugador.setNombre((String) a);
+                            
+                        }else{parser.syntax_error((Symbol)a);}
+:} ATJ_FIN
+		    |TIPO DOS_PUNTOS DIFICULTADES:t {: manejadorJugador.isExiste(2); jugador.setTipo(Integer.parseInt(t.toString()));:} ATJ_FIN;
+
+ATJ_FIN ::=  COMA ATRIB_JUGADORES
+	    | ;
+
+DIFICULTADES ::= HUMANO {:RESULT=0;:}
+		|FACIL {:RESULT=1;:}
+		|DIFICIL {:RESULT=2;:};
+
+
+
+
+
+S1 ::= 	 REPETICION {: manejadorJuego.isExiste(5); repeticion = new Repeticion(); :} DOS_PUNTOS CORCHE_A ESTRUCTURA_REPETICION CORCHE_C FIN_S1
+        |MENSAJES {: manejadorJuego.isExiste(6); mensaje = new Mensaje(); :} DOS_PUNTOS CORCHE_A ESTRUCTURA_MENSAJE CORCHE_C FIN_S1;
+
+FIN_S1 ::= COMA S1
+	  |; 
+
+ESTRUCTURA_REPETICION ::= LLAVES_A ATRIB_REPETICION LLAVES_C {:
+                        if(manejadorReplay.isCompleto()){
+                            listaRepeticion.add(repeticion);
+                            manejadorReplay.resetear();
+                            repeticion = new Repeticion();
+                        }
+                    :} COMA ESTRUCTURA_REPETICION
+                    |LLAVES_A ATRIB_REPETICION LLAVES_C {:
+                        if(manejadorReplay.isCompleto()){
+                            listaRepeticion.add(repeticion);
+                            manejadorReplay.resetear();
+                            repeticion = new Repeticion();
+                        }
+                    :} 
+                    | ;
+
+
+ATRIB_REPETICION ::= ORIGEN DOS_PUNTOS NUMERO:n {: repeticion.setPosicionOrigen(Integer.parseInt((String) n)); manejadorReplay.isExiste(1);:} ETF_FIN
+                    |DESTINO DOS_PUNTOS NUMERO:n {: repeticion.setPosicionDestion(Integer.parseInt((String) n)); manejadorReplay.isExiste(2);:} ETF_FIN
+                    |TIPOPLANETA DOS_PUNTOS NUMERO:n {: repeticion.setTipoPlanetaDestino(Integer.parseInt((String) n)); manejadorReplay.isExiste(3);:} ETF_FIN
+                    |TURNO DOS_PUNTOS NUMERO:n {: repeticion.setTurnoNumero(Integer.parseInt((String) n)); manejadorReplay.isExiste(4);:} ETF_FIN
+                    |TURNO_JUGADOR DOS_PUNTOS NUMERO:n {: repeticion.setTurnoJugador(Integer.parseInt((String) n)); manejadorReplay.isExiste(5);:} ETF_FIN
+                    |RESULTADO DOS_PUNTOS BOLEANO:b {: repeticion.setResultado((boolean) b); manejadorReplay.isExiste(6);:} ETF_FIN;
+
+ETF_FIN ::= COMA ATRIB_REPETICION
+            |;
+
+ESTRUCTURA_MENSAJE ::=   LLAVES_A ATRIB_MENSAJE LLAVES_C {:
+                        if(manejadorMensaje.isCompleto()){
+                            listaMensajes.add(mensaje);
+                            manejadorMensaje.resetear();
+                            mensaje = new Mensaje();
+                        }
+                    :}COMA ESTRUCTURA_MENSAJE
+                        |LLAVES_A ATRIB_MENSAJE LLAVES_C {:
+                        if(manejadorMensaje.isCompleto()){
+                            listaMensajes.add(mensaje);
+                            manejadorMensaje.resetear();
+                            mensaje = new Mensaje();
+                        }
+                    :}
+                        |;
+
+ATRIB_MENSAJE ::=   NOMBRE DOS_PUNTOS COMILLAS IDENTIFICADOR:a COMILLAS {: mensaje.setPlaneta((String) a); manejadorMensaje.isExiste(1);:} ETM_FIN
+		   |NOMBRE_JUG DOS_PUNTOS COMILLAS IDENTIFICADOR:a COMILLAS {: mensaje.setJugador((String) a); manejadorMensaje.isExiste(2);:} ETM_FIN
+		   |RESULTADO DOS_PUNTOS BOLEANO:b {: mensaje.setResultado((boolean) b); manejadorMensaje.isExiste(3);:} ETM_FIN
+		   |TURNO DOS_PUNTOS NUMERO:n {: mensaje.setTurno(Integer.parseInt((String) n)); manejadorMensaje.isExiste(4);:} ETM_FIN;
+
+ETM_FIN ::=  COMA ATRIB_MENSAJE
+            |;
+
+

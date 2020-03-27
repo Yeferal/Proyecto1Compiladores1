@@ -6,11 +6,13 @@ import objetos.Flota;
 import objetos.Juego;
 import objetos.Mensaje;
 import objetos.Planeta;
+import objetos.Repeticion;
 import ventanas.VentanaJugar;
 
 public class Ataques {
 //    private ArrayList<Jugador>
     private VentanaJugar ventanaJugar;
+    private int tipoPla;
     
     public Ataques(VentanaJugar ventanaJugar){
         this.ventanaJugar = ventanaJugar;
@@ -18,6 +20,7 @@ public class Ataques {
     
     public Juego verificarAtaques(Juego juego,int turno,int numeroTurno){
         Mensaje m = null;
+        Repeticion r = null;
         for (int i = 0; i < juego.getListaJugadores().get(turno).getListaFlota().size(); i++) {
             
             if(!juego.getListaJugadores().get(turno).getListaFlota().get(i).isAtacado()){
@@ -27,6 +30,12 @@ public class Ataques {
                     m = realizarAtaque(juego, turno, numeroTurno, juego.getListaJugadores().get(turno).getListaFlota().get(i));
                     ventanaJugar.agregarMensaje(m);
                     juego.getListaJugadores().get(turno).getListaFlota().get(i).setAtacado(true);
+                    int destino = juego.getListaJugadores().get(turno).getListaFlota().get(i).getDestino();
+                    int origen = juego.getListaJugadores().get(turno).getListaFlota().get(i).getOrigen();
+                    tipoPla = juego.getListaJugadores().get(turno).getListaFlota().get(i).getTipoPlaneta();
+                    
+                    r = new Repeticion(destino, origen, tipoPla, turno, numeroTurno, m.isResultado());
+                    ventanaJugar.agregarRepeticion(r);
                 }
             }
         }
@@ -80,8 +89,10 @@ public class Ataques {
     }
     public void cambiarPlaneta(Juego juego,int numeroPlaneta, int jugador, int tipo){
         if(tipo==1){
+            tipoPla = 1;
             juego.getListaPlanetas().get(numeroPlaneta).setJugador(jugador);
         }else{
+            tipoPla = 0;
             juego.getListaPlanetasNeutrales().get(numeroPlaneta).setJugador(jugador);
             juego.getListaPlanetasNeutrales().get(numeroPlaneta).setTipo(1);
             Planeta pl = juego.getListaPlanetasNeutrales().get(numeroPlaneta);

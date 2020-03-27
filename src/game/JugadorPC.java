@@ -68,7 +68,7 @@ public class JugadorPC {
         }
 
         ventanaJugar.planeta1 = aux1;
-        ventanaJugar.planeta1 = aux2;
+        ventanaJugar.planeta2 = aux2;
         
         Flota flota = new Flota(aux1.getPosicion(), aux2.getPosicion(), aux1.getNombre(), aux2.getNombre(), aux1.getPorcentajeMuertes(),aux2.getTipo());
         flota.setTurno(ventanaJugar.medicion.medirDistancia(aux1, aux2));

@@ -1,9 +1,18 @@
 package analizadores;
 import java_cup.runtime.*;
+import objetos.Error;
+import java.util.ArrayList;
 
 %%
 %{
     //coidgo de usuario en sintaxis java
+    ArrayList<Error> listaErrores = new  ArrayList<>();
+    
+
+public ArrayList<Error> getListaErrores(){
+        return listaErrores;
+    }
+
 %}
 
     //directivas
@@ -80,6 +89,9 @@ false                   {System.out.println("FALSE"); return new Symbol(Simbolos
     "{"                             {System.out.println("LLAVES ABRE"); return new Symbol(Simbolos.LLAVES_A , yycolumn, yyline, yytext());}
     "}"                             {System.out.println("LLAVES CIEERRE"); return new Symbol(Simbolos.LLAVES_C , yycolumn, yyline, yytext());}
     ","                             {System.out.println("COMA"); return new Symbol(Simbolos.COMA , yycolumn, yyline, yytext());}
-    .                               {System.out.println("error Lexico: "+"Columna: "+yycolumn+1+" linea: "+ yyline+1 + "Token: "+yytext());}
+    .                               {System.out.println("error Lexico: "+"Columna: "+yycolumn+1+" linea: "+ yyline+1 + "Token: "+yytext());
+                                    Error error = new Error(yytext(), "Sintactico", "Error Sintaxis token: " + yyline+1 + " " + yycolumn+1 + " " + yytext(), yyline+1, yycolumn+1);
+                                    listaErrores.add(error);
+                                    }
     
 }

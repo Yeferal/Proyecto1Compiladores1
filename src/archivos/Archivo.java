@@ -34,7 +34,7 @@ public class Archivo {
             e2.printStackTrace();
          }
       } 
-        System.out.println(texto);
+        //System.out.println(texto);
         return texto;
     }
     

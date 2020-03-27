@@ -7,6 +7,7 @@ import analizadores.AnalizadorLexico;
 import analizadores.AnalizadorSintactico;
 import archivos.Archivo;
 import archivos.GeneradorPartidaGuardar;
+import archivos.GeneradorReplay;
 import archivos.GuardarArchivo;
 import game.Accion;
 import game.ActualizacionPlanetas;
@@ -37,12 +38,14 @@ import objetos.Juego;
 import objetos.Mensaje;
 import objetos.Planeta;
 import objetos.Error;
+import objetos.Repeticion;
 
 public class VentanaJugar extends javax.swing.JFrame {
 
     GeneradorAleatorioPlanetasN generadorAleatorio = new GeneradorAleatorioPlanetasN();
     Archivo archivo = new Archivo();
     Juego juego;
+    Juego juegoAux;
     Tablero tablero = new Tablero();
     JButton tableroBotones [][];
     VentanaNuevoMapa ventanaNuevoMapa = new VentanaNuevoMapa(this);
@@ -52,9 +55,12 @@ public class VentanaJugar extends javax.swing.JFrame {
     ActualizacionPlanetas actualizacionPlanetas = new ActualizacionPlanetas();
     VentanaEnviarFlota ventanaEnviarFlota = new VentanaEnviarFlota(this);
     VentanaVerFlota ventanaVerFlota = new VentanaVerFlota(this);
+    VentanaReplay ventanaReplay = new VentanaReplay(this);
+    VentanaErrores ventanaErrores = new VentanaErrores();
     public Medicion medicion = new Medicion();
     Ataques ataques = new Ataques(this);
     ArrayList<Mensaje> listaMensajes = new ArrayList<>();
+    ArrayList<Repeticion> listaRepeticion = new ArrayList<>();
     VerificadorPlaneta verificadorPlaneta = new VerificadorPlaneta();
     JugadorPC jpc = new JugadorPC(this);
     public Planeta planeta1;
@@ -202,6 +208,7 @@ public class VentanaJugar extends javax.swing.JFrame {
     public void agregarFlota(Flota flotaA){
         flotaA.setNumero( juego.getListaJugadores().get(turno).getListaFlota().size()+1);
         juego.getListaJugadores().get(turno).agregarFlora(flotaA);
+        System.out.println("Flota de envio: "+planeta1.getPosicion());
         int navesA = juego.getListaPlanetas().get(planeta1.getPosicion()).getNavesEnviadas();
         juego.getListaPlanetas().get(planeta1.getPosicion()).setNavesEnviadas(navesA+flotaA.getNavesEnviadas());
         //juego.getListaJugadores().get(planeta1.getJugador()).agregarFlora(flotaA);
@@ -215,14 +222,22 @@ public class VentanaJugar extends javax.swing.JFrame {
         turno=0;
         numeroTurno=1;
         textoAreaMensajes.setText("TURNO: "+numeroTurno+"");
+        listaMensajes = new ArrayList<>();
+        listaRepeticion = new ArrayList<>();
     }
+    
     public void pintarDatosJugador(){
         labelJug.setText(juego.getListaJugadores().get(turno).getNombre());
         labelTun.setText(numeroTurno+"");
     }
+    
     public void agregarMensaje(Mensaje mensaje){
         listaMensajes.add(mensaje);
         textoAreaMensajes.setText(textoAreaMensajes.getText()+"\n"+mensaje.toString());
+    }
+    
+    public void agregarRepeticion(Repeticion repeticion){
+        listaRepeticion.add(repeticion);
     }
     
     public void actualizarBoton(int x,int y,Planeta p){
@@ -262,6 +277,12 @@ public class VentanaJugar extends javax.swing.JFrame {
         botonMedirDistancia.setEnabled(opci);
         
     }
+    
+    public void mostrarErrores(ArrayList<Error> listaErroresSintactico, ArrayList<Error> listaErroresLexico){
+        ventanaErrores.setActualizar(listaErroresSintactico, listaErroresLexico);
+        ventanaErrores.actualizarListados();
+        ventanaErrores.setVisible(true);
+    }
 
     @SuppressWarnings("unchecked")
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
@@ -292,7 +313,7 @@ public class VentanaJugar extends javax.swing.JFrame {
         menuItemCargarPartida = new javax.swing.JMenuItem();
         menuItemGuardaPartida = new javax.swing.JMenuItem();
         menuItemReplay = new javax.swing.JMenuItem();
-        menuItemPVP = new javax.swing.JMenuItem();
+        menuItemGuardarReplay = new javax.swing.JMenuItem();
         menuEditar = new javax.swing.JMenu();
         menuItemEditarMapa = new javax.swing.JMenuItem();
 
@@ -390,7 +411,7 @@ public class VentanaJugar extends javax.swing.JFrame {
         panelOpcionesLayout.setHorizontalGroup(
             panelOpcionesLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, panelOpcionesLayout.createSequentialGroup()
-                .addContainerGap(14, Short.MAX_VALUE)
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addComponent(labelPlaneta1, javax.swing.GroupLayout.PREFERRED_SIZE, 76, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(labelFlecha, javax.swing.GroupLayout.PREFERRED_SIZE, 82, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -465,10 +486,20 @@ public class VentanaJugar extends javax.swing.JFrame {
         menuJugar.add(menuItemGuardaPartida);
 
         menuItemReplay.setText("Replay");
+        menuItemReplay.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                menuItemReplayActionPerformed(evt);
+            }
+        });
         menuJugar.add(menuItemReplay);
 
-        menuItemPVP.setText("GuardarReplay");
-        menuJugar.add(menuItemPVP);
+        menuItemGuardarReplay.setText("GuardarReplay");
+        menuItemGuardarReplay.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                menuItemGuardarReplayActionPerformed(evt);
+            }
+        });
+        menuJugar.add(menuItemGuardarReplay);
 
         menuBar.add(menuJugar);
 
@@ -503,25 +534,31 @@ public class VentanaJugar extends javax.swing.JFrame {
         fileChooser.showOpenDialog(this);
         File file = fileChooser.getSelectedFile();
         String ruta = "";
+        AnalizadorSintactico sintacitico = null;
+        AnalizadorLexico lexico = null;
         if(file!=null){
             try {
                 ruta = file.getPath();
                 pathMapa = ruta;
-                AnalizadorLexico lexico = new AnalizadorLexico(new StringReader(archivo.leerArchivo(ruta)));
-                AnalizadorSintactico sintacitico = new AnalizadorSintactico(lexico);
+                lexico = new AnalizadorLexico(new StringReader(archivo.leerArchivo(ruta)));
+                sintacitico = new AnalizadorSintactico(lexico);
                 
                 sintacitico.parse();
                 juego = sintacitico.getJuego();
+                
                 panel2.removeAll();
                 //pintar();
-                if(juego.getManejadorMapa().isCompleto()){
+                if(juego.getManejadorMapa().isCompleto() && sintacitico.isCorrecto()){
                     iniciarMapa();
                 }else{
                     JOptionPane.showMessageDialog(null, "El Archivo de Entrada no es Correcto");
-                    //mostrar errores
+                    mostrarErrores(sintacitico.getListaErrores(), lexico.getListaErrores());
                 }
+                juegoAux = new Juego(juego.getMapa(), juego.getManejadorMapa(), new ArrayList<>(), new ArrayList<>(), new ArrayList<>());
+                copiarListas();
             } catch (Exception ex) {
                 JOptionPane.showMessageDialog(null, "El archivo de entrada no es correcto");
+                mostrarErrores(sintacitico.getListaErrores(), lexico.getListaErrores());
             }
         }
     }//GEN-LAST:event_menuItemLeerActionPerformed
@@ -578,35 +615,6 @@ public class VentanaJugar extends javax.swing.JFrame {
         medirDistancia();
     }//GEN-LAST:event_botonMedirDistanciaActionPerformed
 
-    private void botonEnviarNavesActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_botonEnviarNavesActionPerformed
-        enviarFlota();
-    }//GEN-LAST:event_botonEnviarNavesActionPerformed
-
-    private void botonFinTurnoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_botonFinTurnoActionPerformed
-        ataques.verificarAtaques(juego, turno, numeroTurno);
-        
-        if(turno==(juego.getListaJugadores().size()-1)){
-            juego = verificadorPlaneta.asignarProduccion(juego);
-            turno=0;
-            //turnatPc();
-            numeroTurno++;
-            textoAreaMensajes.setText(textoAreaMensajes.getText()+"\n\nTURNO: "+numeroTurno+"");
-            //ataques.verificarAtaques(juego, turno, numeroTurno);
-        }else{
-            turno++;
-            //turnatPc();
-            //ataques.verificarAtaques(juego, turno, numeroTurno);
-        }
-        if(!verificadorPlaneta.verificarSiTienePlanetas(juego, turno)){
-                sumarTurno();
-                System.out.println("Ya no tiene planetas");
-            }
-        verificarGanador();
-        
-        pintarDatosJugador();
-        turnatPc();
-    }//GEN-LAST:event_botonFinTurnoActionPerformed
-
     private void botonConsultarFlotaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_botonConsultarFlotaActionPerformed
         ventanaVerFlota.limpiar();
         System.out.println("Tamnio flota: "+juego.getListaJugadores().get(turno).getListaFlota().size());
@@ -626,7 +634,7 @@ public class VentanaJugar extends javax.swing.JFrame {
             ruta = file.getPath();
             String nombreProyecto = JOptionPane.showInputDialog("Escriba el nombre de la Partida");
             guardarArchivo.crearJSON(nombreProyecto, ruta, texto);
-            JOptionPane.showMessageDialog(null, "Se guardo ls Partida");
+            JOptionPane.showMessageDialog(null, "Se guardo la Partida");
         }
     }
     
@@ -646,11 +654,12 @@ public class VentanaJugar extends javax.swing.JFrame {
         File file = fileChooser.getSelectedFile();
         String ruta = "";
         AnalizadorSintacticoG sintacitico = null ;
+        AnalizadorLexicoG lexico = null;
         if(file!=null){
             try {
                 ruta = file.getPath();
                 pathMapa = ruta;
-                AnalizadorLexicoG lexico = new AnalizadorLexicoG(new StringReader(archivo.leerArchivo(ruta)));
+                lexico = new AnalizadorLexicoG(new StringReader(archivo.leerArchivo(ruta)));
                 sintacitico = new AnalizadorSintacticoG(lexico);
                 
                 sintacitico.parse();
@@ -661,23 +670,77 @@ public class VentanaJugar extends javax.swing.JFrame {
                     turno = juego.getMapa().getTurno();
                     numeroTurno = juego.getMapa().getNumeroTurno();
                     cargarMapa();
+                    
                 }else{
                     JOptionPane.showMessageDialog(null, "El archivo de entrada no es correcto");
+                    mostrarErrores(sintacitico.getListaErrores(), lexico.getListaErrores());
                 }
                 
             } catch (Exception ex) {
                 //ex.printStackTrace();
                 JOptionPane.showMessageDialog(null, "El archivo de entrada no es correcto");
-                ArrayList<Error> listaErrores = sintacitico.getListaErrores();
-                for (int i = 0; i < listaErrores.size(); i++) {
-                    System.out.println(listaErrores.get(i).toString());
-                }
+                mostrarErrores(sintacitico.getListaErrores(), lexico.getListaErrores());
+                
             }
         }
         
         
         
     }//GEN-LAST:event_menuItemCargarPartidaActionPerformed
+
+    private void botonFinTurnoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_botonFinTurnoActionPerformed
+        ataques.verificarAtaques(juego, turno, numeroTurno);
+
+        if(turno==(juego.getListaJugadores().size()-1)){
+            juego = verificadorPlaneta.asignarProduccion(juego);
+            turno=0;
+            //turnatPc();
+            numeroTurno++;
+            textoAreaMensajes.setText(textoAreaMensajes.getText()+"\n\nTURNO: "+numeroTurno+"");
+            //ataques.verificarAtaques(juego, turno, numeroTurno);
+        }else{
+            turno++;
+            //turnatPc();
+            //ataques.verificarAtaques(juego, turno, numeroTurno);
+        }
+        if(!verificadorPlaneta.verificarSiTienePlanetas(juego, turno)){
+            sumarTurno();
+            System.out.println("Ya no tiene planetas");
+        }
+        verificarGanador();
+
+        pintarDatosJugador();
+        turnatPc();
+    }//GEN-LAST:event_botonFinTurnoActionPerformed
+
+    private void botonEnviarNavesActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_botonEnviarNavesActionPerformed
+        enviarFlota();
+    }//GEN-LAST:event_botonEnviarNavesActionPerformed
+
+    public void copiarListas(){
+        for (int i = 0; i < juego.getListaPlanetas().size(); i++) {
+            juegoAux.agregarPlaneta(juego.getListaPlanetas().get(i));
+        }
+        for (int i = 0; i < juego.getListaPlanetasNeutrales().size(); i++) {
+            juegoAux.agregarPlanetaNeutrales(juego.getListaPlanetasNeutrales().get(i));
+        }
+        for (int i = 0; i < juego.getListaJugadores().size(); i++) {
+            juegoAux.agregarJugador(juego.getListaJugadores().get(i));
+        }
+    }
+    
+    private void menuItemReplayActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_menuItemReplayActionPerformed
+        
+        ventanaReplay.setVisible(true);
+        this.setVisible(false);
+        
+    }//GEN-LAST:event_menuItemReplayActionPerformed
+
+    private void menuItemGuardarReplayActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_menuItemGuardarReplayActionPerformed
+        GeneradorReplay generadorReplay = new GeneradorReplay();
+        generadorReplay.generar(juegoAux.getMapa(), juegoAux.getListaPlanetas(), juegoAux.getListaPlanetasNeutrales(), juegoAux.getListaJugadores(), listaRepeticion, listaMensajes);
+        escribirArchivo(generadorReplay.getTexto());
+    }//GEN-LAST:event_menuItemGuardarReplayActionPerformed
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton botonConsultarFlota;
@@ -698,9 +761,9 @@ public class VentanaJugar extends javax.swing.JFrame {
     private javax.swing.JMenuItem menuItemCargarPartida;
     private javax.swing.JMenuItem menuItemEditarMapa;
     private javax.swing.JMenuItem menuItemGuardaPartida;
+    private javax.swing.JMenuItem menuItemGuardarReplay;
     private javax.swing.JMenuItem menuItemLeer;
     private javax.swing.JMenuItem menuItemNuevoJuego;
-    private javax.swing.JMenuItem menuItemPVP;
     private javax.swing.JMenuItem menuItemReplay;
     private javax.swing.JMenu menuJugar;
     public javax.swing.JPanel panel1;

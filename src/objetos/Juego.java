@@ -19,6 +19,18 @@ public class Juego {
         this.listaPlanetasNeutrales = listaPlanetasNeutrales;
         this.listaJugadores = listaJugadores;
     }
+    
+    public void agregarPlaneta(Planeta p){
+        listaPlanetas.add(p);
+    }
+    
+    public void agregarPlanetaNeutrales(Planeta p){
+        listaPlanetasNeutrales.add(p);
+    }
+    
+    public void agregarJugador(Jugador j){
+        listaJugadores.add(j);
+    }
 
     public Mapa getMapa() {
         return mapa;

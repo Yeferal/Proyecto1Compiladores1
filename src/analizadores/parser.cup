@@ -14,6 +14,7 @@ parser code
 {:
     Juego juego;
     Mapa mapa;
+    boolean correcto = true;
     ManejadorMapa manejadorMapa;
     ArrayList<Planeta> listaPlanetas;
     ArrayList<Planeta> listaPlanetasNeutrales;
@@ -35,6 +36,13 @@ parser code
     public Juego getJuego(){
         return juego;
     }
+    public boolean isCorrecto(){
+        return correcto;
+    }
+
+    public ArrayList<Error> getListaErrores(){
+        return listaErrores;
+    }
 
     private Symbol s;
     public void syntaxError(Symbol s){
@@ -49,6 +57,7 @@ parser code
         }
 
     public void syntax_error(Symbol s){
+            correcto = false;
             if(s!=null){
                 Error e = new Error((String) s.value, "Sintactico", "Error Sintaxis token: " + s.right + " " + s.left + " " + s.value, s.right, s.left);
                 listaErrores.add(e);
@@ -97,13 +106,15 @@ start with INICIO;
 
 //Reglas Semanticas
 
-INICIO ::=  LLAVES_A S0 LLAVES_C {: parser.setAtributos(manejadorMapa, mapa, listaPlanetas, listaPlanetasNeutrales, listaJugadores); parser.setJuego();:}
-            |error:e LLAVES_C {:parser.syntax_error((Symbol)e);:};
+INICIO ::=  LLAVES_A S0 LLAVES_C {: parser.setAtributos(manejadorMapa, mapa, listaPlanetas, listaPlanetasNeutrales, listaJugadores); parser.setJuego();:};
+            
 
 S0 ::= 	 MAPA DOS_PUNTOS LLAVES_A {: mapa = new Mapa(); manejadorMapa = new ManejadorMapa();:} ESTRUCTURA_MAPA LLAVES_C COMA S1
         |PLANETAS DOS_PUNTOS CORCHE_A ESTRUCTURA_PLANETAS CORCHE_C COMA S2
 	|PLANETAS_NEUTRALES DOS_PUNTOS CORCHE_A ESTRUCTURA_PLANT_NEU CORCHE_C COMA S3
 	|JUGADORES DOS_PUNTOS CORCHE_A ESTRUCTURA_JUGADORES CORCHE_C COMA S4
+        |error:e LLAVES_C {:parser.syntax_error((Symbol)e);:}
+        |error:e LLAVES_A {:parser.syntax_error((Symbol)e);:}
         |error:e S0 {:parser.syntax_error((Symbol)e);:};
 
 S1 ::=   PLANETAS DOS_PUNTOS CORCHE_A ESTRUCTURA_PLANETAS CORCHE_C COMA S5
