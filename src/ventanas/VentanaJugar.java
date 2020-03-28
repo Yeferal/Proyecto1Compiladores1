@@ -242,6 +242,7 @@ public class VentanaJugar extends javax.swing.JFrame {
         textoAreaMensajes.setText("TURNO: "+numeroTurno+"");
         listaMensajes = new ArrayList<>();
         listaRepeticion = new ArrayList<>();
+        textoMapa.setText(juego.getMapa().getId());
     }
     
     public void pintarDatosJugador(){
@@ -363,6 +364,7 @@ public class VentanaJugar extends javax.swing.JFrame {
         panel3 = new javax.swing.JPanel();
         jScrollPane1 = new javax.swing.JScrollPane();
         textoAreaMensajes = new javax.swing.JTextArea();
+        textoMapa = new javax.swing.JTextField();
         labelFondo = new javax.swing.JLabel();
         panelOpciones = new javax.swing.JPanel();
         botonEnviarNaves = new javax.swing.JButton();
@@ -380,7 +382,7 @@ public class VentanaJugar extends javax.swing.JFrame {
         menuItemReplay = new javax.swing.JMenuItem();
         menuItemGuardarReplay = new javax.swing.JMenuItem();
         menuEditar = new javax.swing.JMenu();
-        menuItemEditarMapa = new javax.swing.JMenuItem();
+        menuItemFinalizarPartida = new javax.swing.JMenuItem();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         getContentPane().setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
@@ -437,6 +439,9 @@ public class VentanaJugar extends javax.swing.JFrame {
         panel3.add(jScrollPane1, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 0, 1010, 160));
 
         getContentPane().add(panel3, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 670, 1010, 160));
+
+        textoMapa.setEditable(false);
+        getContentPane().add(textoMapa, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 100, 100, 40));
         getContentPane().add(labelFondo, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 66, 1010, 600));
 
         panelOpciones.setBackground(new java.awt.Color(0, 0, 0));
@@ -568,10 +573,15 @@ public class VentanaJugar extends javax.swing.JFrame {
 
         menuBar.add(menuJugar);
 
-        menuEditar.setText("Edit");
+        menuEditar.setText("Partida");
 
-        menuItemEditarMapa.setText("Editar Mapa");
-        menuEditar.add(menuItemEditarMapa);
+        menuItemFinalizarPartida.setText("Finalizar Partida");
+        menuItemFinalizarPartida.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                menuItemFinalizarPartidaActionPerformed(evt);
+            }
+        });
+        menuEditar.add(menuItemFinalizarPartida);
 
         menuBar.add(menuEditar);
 
@@ -808,6 +818,14 @@ public class VentanaJugar extends javax.swing.JFrame {
         guardarReplay();
     }//GEN-LAST:event_menuItemGuardarReplayActionPerformed
 
+    private void menuItemFinalizarPartidaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_menuItemFinalizarPartidaActionPerformed
+        if(juego!=null && juego.getMapa()!=null){
+            bloquear(false); 
+            //mostrar ventana de finalizacion
+            ventanaFinalizacion.setVisible(true);
+        }
+    }//GEN-LAST:event_menuItemFinalizarPartidaActionPerformed
+
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton botonConsultarFlota;
     private javax.swing.JButton botonEnviarNaves;
@@ -825,7 +843,7 @@ public class VentanaJugar extends javax.swing.JFrame {
     private javax.swing.JMenuBar menuBar;
     private javax.swing.JMenu menuEditar;
     private javax.swing.JMenuItem menuItemCargarPartida;
-    private javax.swing.JMenuItem menuItemEditarMapa;
+    private javax.swing.JMenuItem menuItemFinalizarPartida;
     private javax.swing.JMenuItem menuItemGuardaPartida;
     private javax.swing.JMenuItem menuItemGuardarReplay;
     private javax.swing.JMenuItem menuItemLeer;
@@ -837,5 +855,6 @@ public class VentanaJugar extends javax.swing.JFrame {
     public javax.swing.JPanel panel3;
     public javax.swing.JPanel panelOpciones;
     private javax.swing.JTextArea textoAreaMensajes;
+    private javax.swing.JTextField textoMapa;
     // End of variables declaration//GEN-END:variables
 }
