@@ -5,7 +5,7 @@ public class Mapa {
     
     private String id;
     private int tamanioX, tamanioY, planetasNeutrales, produccionNeutrales, finalizacion;
-    private boolean alAzar, mapaCiego, acumular, mostrarNavesNeutrales, mostrarEstadisticasNeutrales;
+    private boolean alAzar, mapaCiego, acumular, mostrarNavesNeutrales, mostrarEstadisticasNeutrales, bolFinalizar;
     private int turno,numeroTurno;
 
     public Mapa(){
@@ -14,7 +14,18 @@ public class Mapa {
         acumular = false;
         mostrarNavesNeutrales = false;
         mostrarEstadisticasNeutrales = false;
+        bolFinalizar = false;
     }
+
+    public boolean isBolFinalizar() {
+        return bolFinalizar;
+    }
+
+    public void setBolFinalizar(boolean bolFinalizar) {
+        this.bolFinalizar = bolFinalizar;
+    }
+    
+    
     
     public int getNumeroCuadros(){
         return tamanioX*tamanioY;
@@ -65,6 +76,7 @@ public class Mapa {
     }
 
     public void setFinalizacion(int finalizacion) {
+        bolFinalizar = true;
         this.finalizacion = finalizacion;
     }
 

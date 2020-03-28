@@ -121,6 +121,7 @@ public class VentanaJugar extends javax.swing.JFrame {
         panelOpciones.setVisible(true);
         panel1.setVisible(true);
         panel3.setVisible(true);
+        panel2.setVisible(true);
         iniciarDatos();
         pintarDatosJugador();
     }
@@ -145,6 +146,7 @@ public class VentanaJugar extends javax.swing.JFrame {
         panelOpciones.setVisible(true);
         panel1.setVisible(true);
         panel3.setVisible(true);
+        panel2.setVisible(true);
         textoAreaMensajes.setText(textoAreaMensajes.getText()+"\n\n"+"TURNO: "+numeroTurno+"");
         pintarDatosJugador();
         bloquear(true);
@@ -160,7 +162,7 @@ public class VentanaJugar extends javax.swing.JFrame {
         }
     }
     public void verificarFinalizacion(){
-        if(numeroTurno==juego.getMapa().getFinalizacion()){
+        if(juego.getMapa().isBolFinalizar() && numeroTurno==juego.getMapa().getFinalizacion()){
             bloquear(false);
             JOptionPane.showMessageDialog(null, "El juego llego al limite de turnos");
             //mostrar ventana de finalizacion
@@ -220,7 +222,11 @@ public class VentanaJugar extends javax.swing.JFrame {
     public void agregarFlota(Flota flotaA){
         flotaA.setNumero( juego.getListaJugadores().get(turno).getListaFlota().size()+1);
         juego.getListaJugadores().get(turno).agregarFlora(flotaA);
-        System.out.println("Flota de envio: "+planeta1.getPosicion());
+        System.out.println("Flota de envio: "+planeta1.getPosicion()+" tipo: "+planeta1.getTipo());
+//        if(){
+//            
+//        }
+        
         int navesA = juego.getListaPlanetas().get(planeta1.getPosicion()).getNavesEnviadas();
         juego.getListaPlanetas().get(planeta1.getPosicion()).setNavesEnviadas(navesA+flotaA.getNavesEnviadas());
         //juego.getListaJugadores().get(planeta1.getJugador()).agregarFlora(flotaA);
@@ -267,6 +273,10 @@ public class VentanaJugar extends javax.swing.JFrame {
     public void verificarGanador(){
         if(verificadorPlaneta.verificarPlanetasNeutrales(juego) && verificadorPlaneta.verificarGanador(juego)){
             JOptionPane.showMessageDialog(null, "Hay un Ganador");
+            bloquear(false);
+            
+            //mostrar ventana de finalizacion
+            ventanaFinalizacion.setVisible(true);
         }
         verificarFinalizacion();
     }
@@ -612,6 +622,7 @@ public class VentanaJugar extends javax.swing.JFrame {
                 juegoAux = new Juego(juego.getMapa(), juego.getManejadorMapa(), new ArrayList<>(), new ArrayList<>(), new ArrayList<>());
                 copiarListas();
             } catch (Exception ex) {
+                ex.printStackTrace();
                 JOptionPane.showMessageDialog(null, "El archivo de entrada no es correcto");
                 mostrarErrores(sintacitico.getListaErrores(), lexico.getListaErrores());
             }
