@@ -103,8 +103,9 @@ public class VentanaReplay extends javax.swing.JFrame {
         panelOpciones.setVisible(true);
         panel1.setVisible(true);
         panel3.setVisible(true);
-        textoAreaMensajes.setText("TURNO: "+numeroTurno+"");
+        
         inciciarDatos();
+        textoAreaMensajes.setText("TURNO: "+numeroTurno+"");
         pintarDatosJugador();
         
     }
@@ -124,25 +125,40 @@ public class VentanaReplay extends javax.swing.JFrame {
     }
     
     public void correrCambio(){
-        System.out.println("Bandera: "+bandera);
         if(listaMensajes.size()!=bandera){
-            listaMensajes.get(bandera).setResultadoS();
-            textoAreaMensajes.setText(textoAreaMensajes.getText()+"\n"+listaMensajes.get(bandera).toString());
-            if(listaRepeticiones.get(bandera).isResultado()){
-                System.out.println("ENTRO EN REPETICION");
-                Planeta p1 = getPlanetaSeleccionado(listaRepeticiones.get(bandera).getPosicionOrigen(), 1);
-                Planeta p2 = getPlanetaSeleccionado(listaRepeticiones.get(bandera).getPosicionDestion(), listaRepeticiones.get(bandera).getTipoPlanetaDestino());
-                cambiarPlaneta(juego, listaRepeticiones.get(bandera).getPosicionDestion(), p1.getJugador(), listaRepeticiones.get(bandera).getTipoPlanetaDestino());
-                cambiarTextoBoton(p2.getCoordenadaX(), p2.getCoordenadaY(), p2);
+            if(numeroTurno==listaMensajes.get(bandera).getTurno()){
+            if(listaMensajes.size()!=bandera){
+                listaMensajes.get(bandera).setResultadoS();
+                textoAreaMensajes.setText(textoAreaMensajes.getText()+"\n"+listaMensajes.get(bandera).toString());
+                
+                if(listaRepeticiones.get(bandera).isResultado()){
+                
+                    Planeta p1 = getPlanetaSeleccionado(listaRepeticiones.get(bandera).getPosicionOrigen(), 1);
+                    Planeta p2 = getPlanetaSeleccionado(listaRepeticiones.get(bandera).getPosicionDestion(), listaRepeticiones.get(bandera).getTipoPlanetaDestino());
+                    
+                    cambiarPlaneta(juego, listaRepeticiones.get(bandera).getPosicionDestion(), p1.getJugador(), listaRepeticiones.get(bandera).getTipoPlanetaDestino());
+                    cambiarTextoBoton(p2.getCoordenadaX(), p2.getCoordenadaY(), p2);
+                }else{
+                    System.out.println("NO ENTRO EN REPETICION");
+                }
+                    bandera = bandera +1;
+
+
+                }else{
+                    JOptionPane.showMessageDialog(null, "Se termino la partida");
+                }
+
+
             }else{
-                System.out.println("NO ENTRO EN REPETICION");
+                sumarTurno();
             }
-            bandera = bandera +1;
-            System.out.println("SUMOOO: "+bandera);
-            sumarTurno();
         }else{
             JOptionPane.showMessageDialog(null, "Se termino la partida");
         }
+        
+        
+        System.out.println("Bandera: "+bandera);
+        
         
     }
     

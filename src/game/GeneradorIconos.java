@@ -20,7 +20,7 @@ public class GeneradorIconos {
                 y = (int) (Math.random()*juego.getMapa().getTamanioY());
                 
                 if(tableroBotones[x][y].getIcon()==null){
-                    System.out.println("coordenada: "+x+", "+y);
+                    
                     tableroBotones[x][y].setIcon(tablero.getIcono(tableroBotones[x][y].getWidth(),tableroBotones[x][y].getHeight()));
                     juego.getListaPlanetasNeutrales().get(i).setCoordenadas(x, y);
                     juego.getListaPlanetasNeutrales().get(i).setPosicion(i);
@@ -47,7 +47,7 @@ public class GeneradorIconos {
                 y = (int) (Math.random()*juego.getMapa().getTamanioY());
                 
                 if(tableroBotones[x][y].getIcon()==null){
-                    System.out.println("coordenada2222: "+x+", "+y);
+                    
                     tableroBotones[x][y].setIcon(tablero.getIcono(tableroBotones[x][y].getWidth(),tableroBotones[x][y].getHeight()));
                     //tableroBotones[x][y].setBackground(new Color(i, i, i));
                     juego.getListaPlanetas().get(i).setCoordenadas(x, y);
@@ -81,7 +81,7 @@ public class GeneradorIconos {
                     
                     x = juego.getListaPlanetasNeutrales().get(i).getCoordenadaX();
                     y = juego.getListaPlanetasNeutrales().get(i).getCoordenadaY();
-                    System.out.println("coordenada: "+x+", "+y);
+                    
                     tableroBotones[x][y].setIcon(tablero.getIcono(tableroBotones[x][y].getWidth(),tableroBotones[x][y].getHeight()));
                     juego.getListaPlanetasNeutrales().get(i).setCoordenadas(x, y);
                     juego.getListaPlanetasNeutrales().get(i).setPosicion(i);
@@ -101,7 +101,7 @@ public class GeneradorIconos {
         for(int i =0; i<juego.getListaPlanetas().size();i++){
                     x = juego.getListaPlanetas().get(i).getCoordenadaX();
                     y = juego.getListaPlanetas().get(i).getCoordenadaY();
-                    System.out.println("coordenada: "+x+", "+y);
+                    
                     tableroBotones[x][y].setIcon(tablero.getIcono(tableroBotones[x][y].getWidth(),tableroBotones[x][y].getHeight()));
                     //tableroBotones[x][y].setBackground(new Color(i, i, i));
                     juego.getListaPlanetas().get(i).setCoordenadas(x, y);

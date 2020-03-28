@@ -6,7 +6,7 @@ import java.util.ArrayList;
 public class Jugador {
         
     private String nombre;
-    private int tipo, turnos;
+    private int tipo, turnos, numeroPlanetas;
     private ArrayList<Planeta> planetas = new ArrayList<>();
     private ArrayList<String> listaPlanetas = new ArrayList<>();
     private ArrayList<Flota> listaFlota = new ArrayList<>();
@@ -98,6 +98,15 @@ public class Jugador {
     public void setTurnos(int turnos) {
         this.turnos = turnos;
     }
+
+    public int getNumeroPlanetas() {
+        return numeroPlanetas;
+    }
+
+    public void setNumeroPlanetas(int numeroPlanetas) {
+        this.numeroPlanetas = numeroPlanetas;
+    }
+    
     
     
     

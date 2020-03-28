@@ -56,11 +56,13 @@ public class VentanaJugar extends javax.swing.JFrame {
     VentanaEnviarFlota ventanaEnviarFlota = new VentanaEnviarFlota(this);
     VentanaVerFlota ventanaVerFlota = new VentanaVerFlota(this);
     VentanaReplay ventanaReplay = new VentanaReplay(this);
+    VentanaFinalizacion ventanaFinalizacion = new VentanaFinalizacion(this);
     VentanaErrores ventanaErrores = new VentanaErrores();
     public Medicion medicion = new Medicion();
     Ataques ataques = new Ataques(this);
     ArrayList<Mensaje> listaMensajes = new ArrayList<>();
     ArrayList<Repeticion> listaRepeticion = new ArrayList<>();
+    ArrayList<Flota> listaFlotaU = new ArrayList<>();
     VerificadorPlaneta verificadorPlaneta = new VerificadorPlaneta();
     JugadorPC jpc = new JugadorPC(this);
     public Planeta planeta1;
@@ -96,6 +98,7 @@ public class VentanaJugar extends javax.swing.JFrame {
                 JOptionPane.showMessageDialog(null, "EL NUMERO DE CASILLAS ES MENOR AL NUMERO DE PLANETAS");
             }
         }
+        bloquear(true);
     }
     
     public void pintar(){
@@ -142,9 +145,9 @@ public class VentanaJugar extends javax.swing.JFrame {
         panelOpciones.setVisible(true);
         panel1.setVisible(true);
         panel3.setVisible(true);
-        textoAreaMensajes.setText("TURNO: "+numeroTurno+"");
+        textoAreaMensajes.setText(textoAreaMensajes.getText()+"\n\n"+"TURNO: "+numeroTurno+"");
         pintarDatosJugador();
-        
+        bloquear(true);
     }
     public void setPlanetaSeleccionado(Planeta planeta){
         Planeta aux = isTipoPlaneta(planeta.getPosicion(), planeta.getTipo());
@@ -156,6 +159,15 @@ public class VentanaJugar extends javax.swing.JFrame {
             labelPlaneta2.setText(aux.getNombre());
         }
     }
+    public void verificarFinalizacion(){
+        if(numeroTurno==juego.getMapa().getFinalizacion()){
+            bloquear(false);
+            JOptionPane.showMessageDialog(null, "El juego llego al limite de turnos");
+            //mostrar ventana de finalizacion
+            ventanaFinalizacion.setVisible(true);
+        }
+    }
+    
     private Planeta isTipoPlaneta(int posicion, int tipo){
         if(tipo==1){
             return juego.getListaPlanetas().get(posicion);
@@ -256,6 +268,7 @@ public class VentanaJugar extends javax.swing.JFrame {
         if(verificadorPlaneta.verificarPlanetasNeutrales(juego) && verificadorPlaneta.verificarGanador(juego)){
             JOptionPane.showMessageDialog(null, "Hay un Ganador");
         }
+        verificarFinalizacion();
     }
     public void cambiarTextoBoton(int x,int y,Planeta p){
         tableroBotones[x][y].setText("<html><b>N :</b>"+p.getNombre()+"<br>"+"<b>J: </b>"+juego.getListaJugadores().get(p.getJugador()).getNombre()+"<html>");
@@ -282,6 +295,48 @@ public class VentanaJugar extends javax.swing.JFrame {
         ventanaErrores.setActualizar(listaErroresSintactico, listaErroresLexico);
         ventanaErrores.actualizarListados();
         ventanaErrores.setVisible(true);
+    }
+    
+    public void actualizarTurnos(){
+
+        for (int i = 1; i < numeroTurno; i++) {            
+            textoAreaMensajes.setText(textoAreaMensajes.getText()+"\n"+"TURNO: "+i);
+            for (int j = 0; j < listaMensajes.size(); j++) {
+                if(listaMensajes.get(j).getTurno()==i){
+                    listaMensajes.get(j).setResultadoS();
+                    textoAreaMensajes.setText(textoAreaMensajes.getText()+"\n"+listaMensajes.get(j).toString());
+                }
+            }
+        }
+        for (int i = 0; i < listaFlotaU.size(); i++) {
+            Planeta aux = juego.getListaPlanetas().get(listaFlotaU.get(i).getOrigen());
+            Planeta aux1= null;
+            if(listaFlotaU.get(i).getTipoPlaneta()==1){
+               aux1 = juego.getListaPlanetas().get(listaFlotaU.get(i).getDestino());
+            }else{
+                aux1 = juego.getListaPlanetasNeutrales().get(listaFlotaU.get(i).getDestino());
+            }
+            listaFlotaU.get(i).setOrigenS(aux.getNombre());
+            listaFlotaU.get(i).setDestinoS(aux1.getNombre());
+            juego.getListaJugadores().get(aux.getJugador()).agregarFlora(listaFlotaU.get(i));;
+        }
+        
+        
+    }
+    public void guardarReplay(){
+        GeneradorReplay generadorReplay = new GeneradorReplay();
+        generadorReplay.generar(juegoAux.getMapa(), juegoAux.getListaPlanetas(), juegoAux.getListaPlanetasNeutrales(), juegoAux.getListaJugadores(), listaRepeticion, listaMensajes);
+        escribirArchivo(generadorReplay.getTexto());
+    }
+    public void limpiar(){
+        panel2.removeAll();
+        juego = null;
+        labelJug.setText("");
+        labelTun.setText("");
+        panel1.setVisible(false);
+        panel2.setVisible(false);
+        panel3.setVisible(false);
+        panelOpciones.setVisible(false);
     }
 
     @SuppressWarnings("unchecked")
@@ -669,10 +724,12 @@ public class VentanaJugar extends javax.swing.JFrame {
                     panel2.removeAll();
                     turno = juego.getMapa().getTurno();
                     numeroTurno = juego.getMapa().getNumeroTurno();
+                    listaFlotaU = sintacitico.getListaFlota();
+                    actualizarTurnos();
                     cargarMapa();
                     
                 }else{
-                    JOptionPane.showMessageDialog(null, "El archivo de entrada no es correcto");
+                    JOptionPane.showMessageDialog(null, "El archivo de entradkgjhgjhgja no es correcto");
                     mostrarErrores(sintacitico.getListaErrores(), lexico.getListaErrores());
                 }
                 
@@ -737,9 +794,7 @@ public class VentanaJugar extends javax.swing.JFrame {
     }//GEN-LAST:event_menuItemReplayActionPerformed
 
     private void menuItemGuardarReplayActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_menuItemGuardarReplayActionPerformed
-        GeneradorReplay generadorReplay = new GeneradorReplay();
-        generadorReplay.generar(juegoAux.getMapa(), juegoAux.getListaPlanetas(), juegoAux.getListaPlanetasNeutrales(), juegoAux.getListaJugadores(), listaRepeticion, listaMensajes);
-        escribirArchivo(generadorReplay.getTexto());
+        guardarReplay();
     }//GEN-LAST:event_menuItemGuardarReplayActionPerformed
 
     // Variables declaration - do not modify//GEN-BEGIN:variables

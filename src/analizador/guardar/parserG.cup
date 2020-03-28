@@ -317,6 +317,7 @@ FIN_S1 ::= COMA S1
 ESTRUCTURA_FLOTA ::= LLAVES_A ATRIB_FLOTA LLAVES_C {:
                         if(manejadorFlota.isCompleto()){
                             listaFlota.add(flota);
+                            
                             manejadorFlota.resetear();
                             flota = new Flota();
                         }

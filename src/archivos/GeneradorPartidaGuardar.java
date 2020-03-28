@@ -166,22 +166,22 @@ public class GeneradorPartidaGuardar {
     public void generarFlotas(ArrayList<Jugador> listaJugadores){
         texto += "{\n" +
 "    FLOTAS:[\n";
-        for (int i = 0; i <listaJugadores.size() ; i++) {
-            ArrayList<Flota> listaFlota = listaJugadores.get(i).getListaFlota();
+        
+            ArrayList<Flota> listaFlota = getListaF(listaJugadores);
             for (int j = 0; j < listaFlota.size(); j++) {
                 texto+="        {\n" +
-"        origen: "+listaFlota.get(i).getOrigen()+",\n" +
-"	 destino: "+listaFlota.get(i).getDestino()+",\n" +
-"	 porcentajeMuertes: "+listaFlota.get(i).getPorcetajeMuertes()+",\n" +
-"	 tipoPlaneta: "+listaFlota.get(i).getTipoPlaneta()+",\n" +
-"	 naves: "+listaFlota.get(i).getNavesEnviadas()+",\n" +
-"	 turnoDistancia: "+listaFlota.get(i).getTurno()+",\n" +
-"	 turnoLlegada: "+listaFlota.get(i).getTurnosLlegar()+"\n	}";
-                if(i!=(listaJugadores.size()-1) || j!=(listaJugadores.size()-1)){
+"        origen: "+listaFlota.get(j).getOrigen()+",\n" +
+"	 destino: "+listaFlota.get(j).getDestino()+",\n" +
+"	 porcentajeMuertes: "+listaFlota.get(j).getPorcetajeMuertes()+",\n" +
+"	 tipoPlaneta: "+listaFlota.get(j).getTipoPlaneta()+",\n" +
+"	 naves: "+listaFlota.get(j).getNavesEnviadas()+",\n" +
+"	 turnoDistancia: "+listaFlota.get(j).getTurno()+",\n" +
+"	 turnoLlegada: "+listaFlota.get(j).getTurnosLlegar()+"\n	}";
+                if(j!=(listaFlota.size()-1)){
                     texto+=",\n";
                 }
             }
-        }
+        
         texto+="\n    ],\n" +
 "    ";
     }
@@ -205,5 +205,16 @@ public class GeneradorPartidaGuardar {
         texto+="\n    ]\n" +
 "    \n" +
 "}";
+    }
+    
+    public ArrayList<Flota> getListaF(ArrayList<Jugador> listaJugadores){
+        ArrayList<Flota> listaFlota = new ArrayList<>();
+        for (int i = 0; i < listaJugadores.size(); i++) {
+            for (int j = 0; j < listaJugadores.get(i).getListaFlota().size(); j++) {
+                listaFlota.add(listaJugadores.get(i).getListaFlota().get(j));
+            }
+        }
+        
+        return listaFlota;
     }
 }
