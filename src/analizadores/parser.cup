@@ -288,10 +288,10 @@ ESTRUCTURA_PLANT_NEU ::= LLAVES_A ATRIB_PLANETAS LLAVES_C {:
                     :}
                         |error:e ESTRUCTURA_PLANT_NEU {:parser.syntax_error((Symbol)e);:};
 
-ATRIB_PLANETAS ::=   NOMBRE {:p = new Planeta();:} DOS_PUNTOS COMILLAS IDENTIFICADOR:a COMILLAS {:
+ATRIB_PLANETAS ::=   NOMBRE {:p = new Planeta();:} DOS_PUNTOS COMILLAS:e IDENTIFICADOR:a COMILLAS {:
                     if(manejadorPlanetas.isCorrecto((String) a)){
                         p.setNombre((String) a);
-                    }else{p.setNombre(null); parser.syntax_error((Symbol)a);}:} COMA ATP1
+                    }else{p.setNombre(null); parser.syntax_error(new Symbol(aright, a));}:} COMA ATP1
 
                     |NAVES {:p = new Planeta();:} DOS_PUNTOS NUMERO:n {:p.setNaves(Integer.parseInt((String) n));:} COMA ATP2
                     |PRODUCCION {:p = new Planeta();:} DOS_PUNTOS NUMERO:n {:p.setProduccion(Integer.parseInt((String) n));:} COMA ATP3
@@ -305,14 +305,14 @@ ATP1 ::= NAVES DOS_PUNTOS NUMERO:n {:p.setNaves(Integer.parseInt((String) n));:}
 ATP2 ::= NOMBRE DOS_PUNTOS COMILLAS IDENTIFICADOR:a COMILLAS {:
                     if(manejadorPlanetas.isCorrecto((String) a)){
                         p.setNombre((String) a);
-                    }else{p.setNombre(null); parser.syntax_error((Symbol)a);}:} COMA ATP5
+                    }else{p.setNombre(null); parser.syntax_error(new Symbol(aright, a));}:} COMA ATP5
         |PRODUCCION DOS_PUNTOS NUMERO:n {:p.setProduccion(Integer.parseInt((String) n));:} COMA ATP11
 	|PORCENTAJE_MUERTES DOS_PUNTOS NUMERO:n {:p.setPorcentajeMuertes(Double.parseDouble((String) n));:} COMA ATP12 ;
 
 ATP3 ::= NOMBRE DOS_PUNTOS COMILLAS IDENTIFICADOR:a COMILLAS {:
                     if(manejadorPlanetas.isCorrecto((String) a)){
                         p.setNombre((String) a);
-                    }else{p.setNombre(null); parser.syntax_error((Symbol)a);}:} COMA ATP6
+                    }else{p.setNombre(null); parser.syntax_error(new Symbol(aright, a));}:} COMA ATP6
             |NAVES DOS_PUNTOS NUMERO:n {:p.setNaves(Integer.parseInt((String) n));:} COMA ATP11
             |PORCENTAJE_MUERTES DOS_PUNTOS NUMERO:n {:p.setPorcentajeMuertes(Double.parseDouble((String) n));:} COMA ATP14 ;
 
@@ -320,7 +320,7 @@ ATP3 ::= NOMBRE DOS_PUNTOS COMILLAS IDENTIFICADOR:a COMILLAS {:
 ATP4 ::= NOMBRE DOS_PUNTOS COMILLAS IDENTIFICADOR:a COMILLAS {:
                     if(manejadorPlanetas.isCorrecto((String) a)){
                         p.setNombre((String) a);
-                    }else{p.setNombre(null); parser.syntax_error((Symbol)a);}:} COMA ATP7
+                    }else{p.setNombre(null); parser.syntax_error(new Symbol(aright, a));}:} COMA ATP7
 	|NAVES DOS_PUNTOS NUMERO:n {:p.setNaves(Integer.parseInt((String) n));:} COMA ATP12
 	|PRODUCCION DOS_PUNTOS NUMERO:n {:p.setProduccion(Integer.parseInt((String) n));:} COMA ATP14;
 
@@ -351,19 +351,19 @@ ATP10 ::= NAVES DOS_PUNTOS NUMERO:n {:p.setNaves(Integer.parseInt((String) n));
 ATP11 ::= NOMBRE DOS_PUNTOS COMILLAS IDENTIFICADOR:a COMILLAS {:
                     if(manejadorPlanetas.isCorrecto((String) a)){
                         p.setNombre((String) a);
-                    }else{p.setNombre(null); parser.syntax_error((Symbol)a);}:} COMA ATP8
+                    }else{p.setNombre(null); parser.syntax_error(new Symbol(aright, a));}:} COMA ATP8
          |PORCENTAJE_MUERTES DOS_PUNTOS NUMERO:n {:p.setPorcentajeMuertes(Double.parseDouble((String) n));:} COMA ATP13 ;
 
 ATP12 ::= NOMBRE DOS_PUNTOS COMILLAS IDENTIFICADOR:a COMILLAS {:
                     if(manejadorPlanetas.isCorrecto((String) a)){
                         p.setNombre((String) a);
-                    }else{p.setNombre(null); parser.syntax_error((Symbol)a);}:} COMA ATP9
+                    }else{p.setNombre(null); parser.syntax_error(new Symbol(aright, a));}:} COMA ATP9
          |PRODUCCION DOS_PUNTOS NUMERO:n {:p.setProduccion(Integer.parseInt((String) n));:} COMA ATP13;
 
 ATP13 ::= NOMBRE DOS_PUNTOS COMILLAS IDENTIFICADOR:a COMILLAS {:
                     if(manejadorPlanetas.isCorrecto((String) a)){
                         p.setNombre((String) a);
-                    }else{p.setNombre(null); parser.syntax_error((Symbol)a);}    
+                    }else{p.setNombre(null); parser.syntax_error(new Symbol(aright, a));}    
 
                     if(manejadorPlanetas.isExistPlaneta(listaPlanetas,p)){
                         listaPlanetas.add(p);
@@ -373,7 +373,7 @@ ATP13 ::= NOMBRE DOS_PUNTOS COMILLAS IDENTIFICADOR:a COMILLAS {:
 ATP14 ::= NOMBRE DOS_PUNTOS COMILLAS IDENTIFICADOR:a COMILLAS {:
                     if(manejadorPlanetas.isCorrecto((String) a)){
                         p.setNombre((String) a);
-                    }else{p.setNombre(null); parser.syntax_error((Symbol)a);}:} COMA ATP10
+                    }else{p.setNombre(null); parser.syntax_error(new Symbol(aright, a));}:} COMA ATP10
          |NAVES DOS_PUNTOS NUMERO:n {:p.setNaves(Integer.parseInt((String) n));:} COMA ATP13;
 
 
@@ -401,7 +401,7 @@ ESTRUCTURA_JUGADORES ::= LLAVES_A ATRIB_JUGADORES LLAVES_C {:
 ATRIB_JUGADORES ::= NOMBRE {:jugador = new Jugador();:} DOS_PUNTOS COMILLAS IDENTIFICADOR:a COMILLAS {:
                         if(manejadorJugador.isCorrecto((String) a)){
                             jugador.setNombre((String) a);
-                        }else{parser.syntax_error((Symbol)a);}
+                        }else{jugador.setNombre(null); parser.syntax_error(new Symbol(aright, a));}
 :} COMA ATJ1
 		    |PLANETAS_JUGADOR {:jugador = new Jugador();:} DOS_PUNTOS CORCHE_A PLANET_ASIG CORCHE_C COMA ATJ2
 		    |TIPO {:jugador = new Jugador();:} DOS_PUNTOS DIFICULTADES:n {:jugador.setTipo(Integer.parseInt(n.toString()));:} COMA ATJ3;
@@ -412,14 +412,14 @@ ATJ1 ::= PLANETAS_JUGADOR DOS_PUNTOS CORCHE_A PLANET_ASIG CORCHE_C COMA ATJ4
 ATJ2 ::= NOMBRE DOS_PUNTOS COMILLAS IDENTIFICADOR:a COMILLAS {:
                         if(manejadorJugador.isCorrecto((String) a)){
                             jugador.setNombre((String) a);
-                        }else{parser.syntax_error((Symbol)a);}
+                        }else{parser.syntax_error(new Symbol(aright, a));}
 :} COMA ATJ4
         |TIPO DOS_PUNTOS DIFICULTADES:n {:jugador.setTipo(Integer.parseInt(n.toString()));:} COMA ATJ6;
 
 ATJ3 ::= NOMBRE DOS_PUNTOS COMILLAS IDENTIFICADOR:a COMILLAS {:
                         if(manejadorJugador.isCorrecto((String) a)){
                             jugador.setNombre((String) a);
-                        }else{parser.syntax_error((Symbol)a);}
+                        }else{parser.syntax_error(new Symbol(aright, a));}
 :} COMA ATJ5
         |PLANETAS_JUGADOR DOS_PUNTOS CORCHE_A PLANET_ASIG CORCHE_C COMA ATJ6;
 
@@ -430,17 +430,17 @@ ATJ5 ::= PLANETAS_JUGADOR DOS_PUNTOS CORCHE_A PLANET_ASIG CORCHE_C;
 ATJ6 ::= NOMBRE DOS_PUNTOS COMILLAS IDENTIFICADOR:a COMILLAS {:
                         if(manejadorJugador.isCorrecto((String) a)){
                             jugador.setNombre((String) a);
-                        }else{parser.syntax_error((Symbol)a);}
+                        }else{parser.syntax_error(new Symbol(aright, a));}
 :};
 
 PLANET_ASIG ::=  COMILLAS IDENTIFICADOR:a COMILLAS {:
                     if(manejadorPlanetas.isCorrecto((String) a)){
                         jugador.insertarPlaneta((String) a);
-                    }else{parser.syntax_error((Symbol)a);}:} COMA PLANET_ASIG
+                    }else{parser.syntax_error(new Symbol(aright, a));}:} COMA PLANET_ASIG
                 |COMILLAS IDENTIFICADOR:a COMILLAS {:
                     if(manejadorPlanetas.isCorrecto((String) a)){
                         jugador.insertarPlaneta((String) a);
-                    }else{parser.syntax_error((Symbol)a);}:};
+                    }else{parser.syntax_error(new Symbol(aright, a));}:};
 
 DIFICULTADES ::= HUMANO {:RESULT=0;:}
 		|FACIL {:RESULT=1;:}

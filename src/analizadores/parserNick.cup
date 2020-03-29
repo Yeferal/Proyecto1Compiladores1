@@ -6,6 +6,7 @@ import java_cup.runtime.Symbol;
 parser code
 {:
     private boolean completo;
+    
 
     public void setCompleto(boolean completo){
         this.completo = completo;
@@ -28,6 +29,7 @@ parser code
         }
 
     public void syntax_error(Symbol s){
+            
             if(s!=null){
                 //Error e = new Error((String) s.value, "Sintactico", "Error Sintaxis token: " + s.right + " " + s.left + " " + s.value, s.right, s.left);
             
@@ -46,7 +48,7 @@ action code
 :}
 
 //Declaraciones 
-terminal NICK;
+terminal NICK,ERR;
 
 
 // declaracion no terminales

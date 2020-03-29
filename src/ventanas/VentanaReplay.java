@@ -410,7 +410,7 @@ public class VentanaReplay extends javax.swing.JFrame {
                 sintacitico = new AnalizadorSintacticoR(lexico);
                 
                 sintacitico.parse();
-                if(sintacitico.isCorrecto()){
+                if(sintacitico.isCorrecto() && lexico.getListaErrores().size()==0){
                     juego = sintacitico.getJuego();
                     listaMensajes = sintacitico.getListaMensajes();
                     listaRepeticiones = sintacitico.getListaRepeticiones();

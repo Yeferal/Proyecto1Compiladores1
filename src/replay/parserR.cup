@@ -145,7 +145,7 @@ ESTRUCTURA_MAPA ::=  ID DOS_PUNTOS COMILLAS IDENTIFICADOR:a COMILLAS {:
                     if(!manejadorMapa.isExiste(1)){
                         mapa.setId((String) a);
                     }else{
-                        parser.syntax_error((Symbol)a);
+                        parser.syntax_error(new Symbol(aright, n));
                     }
 :} MAPA_FIN
                     |TAMANO DOS_PUNTOS LLAVES_A DIMENSION LLAVES_C  MAPA_FIN
@@ -153,7 +153,7 @@ ESTRUCTURA_MAPA ::=  ID DOS_PUNTOS COMILLAS IDENTIFICADOR:a COMILLAS {:
                     if(!manejadorMapa.isExiste(5)){
                         mapa.setMapaCiego((boolean) b);
                     }else{
-                        parser.syntax_error((Symbol)b);
+                        parser.syntax_error(new Symbol(aright, b));
                     }
 :} MAPA_FIN
                     |NEUTRALES DOS_PUNTOS LLAVES_A ATRIB_NEU LLAVES_C MAPA_FIN;
@@ -227,7 +227,7 @@ ESTRUCTURA_PLANT_NEU ::= LLAVES_A ATRIB_PLANETAS LLAVES_C {:
 ATRIB_PLANETAS ::=   NOMBRE DOS_PUNTOS COMILLAS IDENTIFICADOR:a {:manejadorPlanetas.isExiste(1);:} COMILLAS {:
                     if(manejadorPlanetas.isCorrecto((String) a)){
                         p.setNombre((String) a);
-                    }else{p.setNombre(null); parser.syntax_error((Symbol)a);}:} ATP_FIN
+                    }else{p.setNombre(null); parser.syntax_error(new Symbol(aright, a));}:} ATP_FIN
                     |NAVES DOS_PUNTOS NUMERO:n {:p.setNaves(Integer.parseInt((String) n));:} {:manejadorPlanetas.isExiste(2);:} ATP_FIN
                     |PRODUCCION DOS_PUNTOS NUMERO:n {:p.setProduccion(Integer.parseInt((String) n));:} {:manejadorPlanetas.isExiste(3);:} ATP_FIN
                     |PORCENTAJE_MUERTES DOS_PUNTOS NUMERO:n {:p.setPorcentajeMuertes(Double.parseDouble((String) n));:} {:manejadorPlanetas.isExiste(4);:} ATP_FIN 
@@ -269,7 +269,7 @@ ATRIB_JUGADORES ::=  NOMBRE DOS_PUNTOS COMILLAS IDENTIFICADOR:a COMILLAS {:
                         if(manejadorJugador.isCorrecto((String) a)){
                             jugador.setNombre((String) a);
                             
-                        }else{parser.syntax_error((Symbol)a);}
+                        }else{ parser.syntax_error(new Symbol(aright, a));}
 :} ATJ_FIN
 		    |TIPO DOS_PUNTOS DIFICULTADES:t {: manejadorJugador.isExiste(2); jugador.setTipo(Integer.parseInt(t.toString()));:} ATJ_FIN;
 

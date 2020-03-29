@@ -46,7 +46,7 @@ action code
 :}
 
 //Declaraciones 
-terminal NOMBRE;
+terminal NOMBRE,ERR;
 
 
 // declaracion no terminales
@@ -57,5 +57,5 @@ start with INICIO;
 
 //Reglas Semanticas
 
-INICIO ::=   NOMBRE {:completo = true; parser.setCompleto(completo);:}
+INICIO ::=   NOMBRE:a {: System.out.println((String) a); completo = true; parser.setCompleto(completo);:}
             |error:e {:parser.syntax_error((Symbol)e); completo = false; parser.setCompleto(completo);:};

@@ -623,7 +623,7 @@ public class VentanaJugar extends javax.swing.JFrame {
                 
                 panel2.removeAll();
                 //pintar();
-                if(juego.getManejadorMapa().isCompleto() && sintacitico.isCorrecto()){
+                if(juego.getManejadorMapa().isCompleto() && sintacitico.isCorrecto() && lexico.getListaErrores().size()==0){
                     iniciarMapa();
                 }else{
                     JOptionPane.showMessageDialog(null, "El Archivo de Entrada no es Correcto");
@@ -739,7 +739,7 @@ public class VentanaJugar extends javax.swing.JFrame {
                 sintacitico = new AnalizadorSintacticoG(lexico);
                 
                 sintacitico.parse();
-                if(sintacitico.isCorrecto()){
+                if(sintacitico.isCorrecto() && lexico.getListaErrores().size()==0 && sintacitico.getListaErrores().size()==0){
                     juego = sintacitico.getJuego();
                     listaMensajes = sintacitico.getListaMensajes();
                     panel2.removeAll();

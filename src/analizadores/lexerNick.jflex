@@ -27,7 +27,9 @@ Nick            = {Letra} {Letra}? {Letra}?
 <YYINITIAL> {
     {Espacio}                       {/*Ignore*/}
     {Nick}                          {System.out.println("NickName: "+yytext()); return new Symbol(SimbolosNick.NICK , yycolumn, yyline, yytext());}
-    .                               {System.out.println("error Lexico: "+"Columna: "+yycolumn+1+" linea: "+ yyline+1 + "Token: "+yytext());}
+    .                               {System.out.println("error Lexico: "+"Columna: "+yycolumn+1+" linea: "+ yyline+1 + "Token: "+yytext());
+                                        return new Symbol(SimbolosJugador.ERR , yycolumn, yyline, yytext());
+                                    }
     
 }
 

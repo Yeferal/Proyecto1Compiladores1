@@ -28,6 +28,8 @@ Nombre          = {Letra} ({Numero}|{Letra})? ({Numero}|{Letra})? ({Numero}|{Let
 <YYINITIAL> {
     {Espacio}                       {/*Ignore*/}
     {Nombre}                        {System.out.println("NickName: "+yytext()); return new Symbol(SimbolosJugador.NOMBRE , yycolumn, yyline, yytext());}
-    .                               {System.out.println("error Lexico: "+"Columna: "+yycolumn+1+" linea: "+ yyline+1 + "Token: "+yytext());}
+    .                               {System.out.println("error Lexico: "+"Columna: "+yycolumn+1+" linea: "+ yyline+1 + "Token: "+yytext()); 
+                                     return new Symbol(SimbolosJugador.ERR , yycolumn, yyline, yytext());
+                                    }
     
 }

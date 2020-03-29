@@ -27,7 +27,7 @@ public class ManejadorJugador {
         } catch (Exception ex) {
             ex.printStackTrace();
         }
-        
+        System.out.println("El error es tipo: "+sintactico.getCompleto());
         if(sintactico.getCompleto()){
             return true;
         }
